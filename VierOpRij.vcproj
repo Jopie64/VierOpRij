@@ -213,6 +213,10 @@
 				RelativePath=".\VierOpRijDlg.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\VierOpRijVeld.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -237,6 +241,10 @@
 			</File>
 			<File
 				RelativePath=".\VierOpRijDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VierOpRijVeld.h"
 				>
 			</File>
 		</Filter>
