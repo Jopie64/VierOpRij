@@ -10,8 +10,8 @@ public:
 	~VierOpRijVeld(void);
 
 	void Pleur(int plek);
-	char Win();
-	char Wie(int x, int y);
+	char Win()const;
+	char Wie(int x, int y)const;
 
 private:
 	int PleurUnchecked(int plek);

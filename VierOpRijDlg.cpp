@@ -89,3 +89,42 @@ HCURSOR CVierOpRijDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+BOOL CVierOpRijDlg::PreTranslateMessage(MSG* pMsg)
+{
+	try
+	{
+		switch(pMsg->message)
+		{
+		case WM_CHAR:
+			switch(pMsg->wParam)
+			{
+			case 'r':
+				m_VierOpRijWnd.SetVeld(VierOpRijVeld());
+				break;
+			default:
+				{
+					char plek = pMsg->wParam - '0';
+					if(plek >= 1 && plek <= 7)
+					{
+						m_VierOpRijWnd.Pleur(plek - 1);
+						switch(m_VierOpRijWnd.Veld().Win())
+						{
+						case 1: AfxMessageBox(L"Rood heeft gewonnen. Blij."); break;
+						case 2: AfxMessageBox(L"Geel heeft gewonnen. Blij."); break;
+						}
+						return TRUE;
+					}
+				}
+				break; //default
+			}//switch
+			break;//WM_CHAR
+		}//switch
+	}
+	catch(std::exception& C_e)
+	{
+		//AfxMessageBox(C_e.what());
+		return TRUE;
+	}
+	return CDialog::PreTranslateMessage(pMsg);
+}

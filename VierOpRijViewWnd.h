@@ -17,7 +17,9 @@ public:
 	afx_msg void OnPaint();
 
 public:
-	void SetVeld(const VierOpRijVeld& veld){m_Veld = veld; Invalidate(FALSE);}
+	void				 SetVeld(const VierOpRijVeld& veld){m_Veld = veld; Invalidate(FALSE);}
+	void				 Pleur(int P_iPlek){m_Veld.Pleur(P_iPlek); Invalidate(FALSE);}
+	const VierOpRijVeld& Veld()const{return m_Veld;}
 private:
 	VierOpRijVeld m_Veld;
 };

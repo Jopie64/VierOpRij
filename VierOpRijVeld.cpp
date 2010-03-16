@@ -16,7 +16,7 @@ char VierOpRijVeld::VolgendeBeurt()
 {
 	char huidigeBeurt = m_Beurt;
 	++m_Beurt;
-	if(m_Beurt > 1)
+	if(m_Beurt > 2)
 		m_Beurt = 1;
 	return huidigeBeurt;
 }
@@ -25,11 +25,11 @@ void VierOpRijVeld::Pleur(int plek)
 {
 	if(plek < 0 || plek >= Sm_Breedte)
 		throw std::runtime_error("Foute plek l*l");
-	if(!PleurUnchecked(plek))
+	if(PleurUnchecked(plek) < 0)
 		throw std::runtime_error("Hier zit ie vol...");
 }
 
-char VierOpRijVeld::Wie(int x, int y)
+char VierOpRijVeld::Wie(int x, int y) const
 {
 	if(x < 0 || x >= Sm_Breedte || y < 0 || y >= Sm_Hoogte)
 		throw std::runtime_error("Die valt dus buiten het veld. Niet zo slim.");
@@ -50,7 +50,7 @@ int VierOpRijVeld::PleurUnchecked(int plek)
 
 }
 
-char VierOpRijVeld::Win()
+char VierOpRijVeld::Win() const
 {
 	return m_Win;
 }
