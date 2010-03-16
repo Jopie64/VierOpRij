@@ -3,7 +3,7 @@
 
 VierOpRijVeld::VierOpRijVeld(void)
 :	m_Beurt(1),
-	m_Win(-1)
+	m_Win(0)
 {
 	memset(m_Veld,0,sizeof(m_Veld));
 }
@@ -27,6 +27,14 @@ void VierOpRijVeld::Pleur(int plek)
 		throw std::runtime_error("Foute plek l*l");
 	if(!PleurUnchecked(plek))
 		throw std::runtime_error("Hier zit ie vol...");
+}
+
+char VierOpRijVeld::Wie(int x, int y)
+{
+	if(x < 0 || x >= Sm_Breedte || y < 0 || y >= Sm_Hoogte)
+		throw std::runtime_error("Die valt dus buiten het veld. Niet zo slim.");
+
+	return m_Veld[x][y];
 }
 
 int VierOpRijVeld::PleurUnchecked(int plek)
@@ -135,5 +143,5 @@ char VierOpRijVeld::Win(int xHint, int yHint)
 	if(gelijk >= 4)
 		return beurt;
 
-	return -1;
+	return 0; //Niemand gewonnen
 }

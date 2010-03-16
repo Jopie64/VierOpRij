@@ -217,6 +217,10 @@
 				RelativePath=".\VierOpRijVeld.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\VierOpRijViewWnd.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -247,6 +251,10 @@
 				RelativePath=".\VierOpRijVeld.h"
 				>
 			</File>
+			<File
+				RelativePath=".\VierOpRijViewWnd.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -272,5 +280,9 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="VierOpRij.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

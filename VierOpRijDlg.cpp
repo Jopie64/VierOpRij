@@ -45,7 +45,10 @@ BOOL CVierOpRijDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	// TODO: Add extra initialization here
+	CRect rectClient;
+	GetClientRect(&rectClient);
+	rectClient.DeflateRect(10,10);
+	m_VierOpRijWnd.Create(NULL, NULL, WS_VISIBLE | WS_CHILD, rectClient, this, 0xFF);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

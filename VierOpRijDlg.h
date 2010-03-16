@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "VierOpRijViewWnd.h"
 
 // CVierOpRijDlg dialog
 class CVierOpRijDlg : public CDialog
@@ -22,6 +23,8 @@ public:
 // Implementation
 protected:
 	HICON m_hIcon;
+
+	CVierOpRijViewWnd m_VierOpRijWnd;
 
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
