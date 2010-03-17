@@ -25,6 +25,7 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 
+	void StopBedenker();
 	void Pleur(int plek);
 
 	void AsyncBedenk(CMijnZetBedenker* pBedenker);

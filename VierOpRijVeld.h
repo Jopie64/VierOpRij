@@ -32,14 +32,16 @@ private:
 class CZetBedenker
 {
 public:
-	CZetBedenker(const VierOpRijVeld& veld):m_Veld(veld),m_Zet(-1){}
+	CZetBedenker(const VierOpRijVeld& veld):m_Veld(veld),m_Zet(-1),m_bAbort(false){}
 	int BedenkZet(int zoekDiepte);
 
-	int Zet(){return m_Zet;}
+	int  Zet()const{return m_Zet;}
+	void Abort(){m_bAbort = true;}
 
 private:
 	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
 
 	VierOpRijVeld	m_Veld;
 	int				m_Zet;
+	bool			m_bAbort;
 };

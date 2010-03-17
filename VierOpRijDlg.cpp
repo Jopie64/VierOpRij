@@ -111,12 +111,19 @@ void CVierOpRijDlg::BedenkResultaat(CMijnZetBedenker* pBedenker)
 			AfxMessageBox(L"Ik weet nix.. Verzin jij maar wat voor mij.");
 		else
 			Pleur(m_BezigeBedenkerPtr->Zet());
-		m_BezigeBedenkerPtr = NULL;
+		StopBedenker();
 	}
 
 	delete pBedenker;
 }
 
+void CVierOpRijDlg::StopBedenker()
+{
+	if(m_BezigeBedenkerPtr == NULL)
+		return;
+	m_BezigeBedenkerPtr->Abort();
+	m_BezigeBedenkerPtr = NULL;
+}
 
 void CVierOpRijDlg::Pleur(int plek)
 {
@@ -125,7 +132,7 @@ void CVierOpRijDlg::Pleur(int plek)
 		if(plek >= 0)
 		{
 			m_VierOpRijWnd.Pleur(plek);
-			m_BezigeBedenkerPtr = NULL;
+			StopBedenker();
 			switch(m_VierOpRijWnd.Veld().Win())
 			{
 			case 1: AfxMessageBox(L"Rood heeft gewonnen. Blij."); break;

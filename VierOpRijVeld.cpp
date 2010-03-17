@@ -154,7 +154,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 {
 	if(veld.Win() != 0)
 		return minMax;
-	if(zoekDiepte == 0)
+	if(zoekDiepte == 0 || m_bAbort)
 		return 0;//Eventueel evalueren...
 
 	VierOpRijVeld veldMetZet(veld);
