@@ -92,15 +92,19 @@ HCURSOR CVierOpRijDlg::OnQueryDragIcon()
 
 void CVierOpRijDlg::Pleur(int plek)
 {
-	m_VierOpRijWnd.Pleur(plek);
-	switch(m_VierOpRijWnd.Veld().Win())
+	if(plek >= 0)
 	{
-	case 1: AfxMessageBox(L"Rood heeft gewonnen. Blij."); break;
-	case 2: AfxMessageBox(L"Geel heeft gewonnen. Blij."); break;
+		m_VierOpRijWnd.Pleur(plek);
+		switch(m_VierOpRijWnd.Veld().Win())
+		{
+		case 1: AfxMessageBox(L"Rood heeft gewonnen. Blij."); break;
+		case 2: AfxMessageBox(L"Geel heeft gewonnen. Blij."); break;
+		}
 	}
-	if(m_VierOpRijWnd.Veld().Beurt() == 2)
+	if(m_VierOpRijWnd.Veld().Beurt() == 2 || plek < 0)
 	{
-		int besteZet = m_VierOpRijWnd.Veld().BesteZet(10);
+		CZetBedenker bedenker;
+		int besteZet = bedenker.BedenkZet(m_VierOpRijWnd.Veld(), 13);
 		if(besteZet < 0)
 			AfxMessageBox(L"Ik weet nix.. Verzin jij maar wat voor mij.");
 		else
@@ -120,6 +124,9 @@ BOOL CVierOpRijDlg::PreTranslateMessage(MSG* pMsg)
 			{
 			case 'r':
 				m_VierOpRijWnd.SetVeld(VierOpRijVeld());
+				break;
+			case 'b':
+				Pleur(-1);
 				break;
 			default:
 				{

@@ -13,7 +13,6 @@ public:
 	char Win()const;
 	char Wie(int x, int y)const;
 
-	int	 BesteZet(int zoekDiepte)const;
 	char Beurt()const{return m_Beurt;}
 
 private:
@@ -25,6 +24,16 @@ private:
 	char m_Beurt;
 	char m_Win;
 
-	friend class CAlphabeta;
+	friend class CZetBedenker;
 
+};
+
+
+class CZetBedenker
+{
+public:
+	int BedenkZet(const VierOpRijVeld& veld, int zoekDiepte);
+
+private:
+	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
 };

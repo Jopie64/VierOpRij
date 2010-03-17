@@ -150,44 +150,41 @@ const int zetVolgorde[] = {3, 2, 4, 1, 5, 0, 6};
 const int plusMax = 1000000000;
 const int minMax  = -plusMax;
 
-class CAlphabeta
+int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
 {
-public:
-	static int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
+	if(veld.Win() != 0)
+		return minMax;
+	if(zoekDiepte == 0)
+		return 0;//Eventueel evalueren...
+
+	VierOpRijVeld veldMetZet(veld);
+	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
-		if(veld.Win() != 0)
-			return minMax;
-		if(zoekDiepte == 0)
-			return 0;//Eventueel evalueren...
-
-		VierOpRijVeld veldMetZet(veld);
-		for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
+		if(veldMetZet.PleurUnchecked(zetVolgorde[i]) < 0)
+			continue;//Kan niet hier...
+		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, NULL);
+		if(pZet == NULL)
+			alpha = __max(alpha, zetScore);
+		else
 		{
-			if(veldMetZet.PleurUnchecked(zetVolgorde[i]) < 0)
-				continue;//Kan niet hier...
-			int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, NULL);
-			if(pZet == NULL)
-				alpha = __max(alpha, zetScore);
-			else
+			if(zetScore > alpha)
 			{
-				if(zetScore > alpha)
-				{
-					alpha = zetScore;
-					*pZet = zetVolgorde[i];						
-				}
+				alpha = zetScore;
+				*pZet = zetVolgorde[i];						
 			}
-
-			if(beta < alpha)
-				break; //Jay! Beta cutoff. Scheelt weer wat tijd.
-			veldMetZet = veld; //Weer even terug... (Hmm gebeurt vaak.. Misschien iets als undo maken ofzo)
 		}
-		return alpha;
-	}
-};
 
-int VierOpRijVeld::BesteZet(int zoekDiepte) const
+		if(beta <= alpha)
+			break; //Jay! Beta cutoff. Scheelt weer wat tijd.
+		veldMetZet = veld; //Weer even terug... (Hmm gebeurt vaak.. Misschien iets als undo maken ofzo)
+	}
+	return alpha;
+}
+
+int CZetBedenker::BedenkZet(const VierOpRijVeld& veld, int zoekDiepte)
 {
 	int besteZet = -1;
-	CAlphabeta::BepaalScore(*this, zoekDiepte, minMax, plusMax, &besteZet);
+	BepaalScore(veld, zoekDiepte, minMax, plusMax, &besteZet);
 	return besteZet;
 }
+
