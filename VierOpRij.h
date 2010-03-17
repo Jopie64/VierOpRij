@@ -9,7 +9,7 @@
 #endif
 
 #include "resource.h"		// main symbols
-
+#include "Threading.h"
 
 // CVierOpRijApp:
 // See VierOpRij.cpp for the implementation of this class
@@ -30,3 +30,8 @@ public:
 };
 
 extern CVierOpRijApp theApp;
+
+class CMainTd : public Threading::CWinMlHook, public Threading::CSingleton<CMainTd>
+{
+public:
+};

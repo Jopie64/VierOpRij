@@ -206,6 +206,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Threading.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\VierOpRij.cpp"
 				>
 			</File>
@@ -237,6 +241,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Threading.h"
 				>
 			</File>
 			<File

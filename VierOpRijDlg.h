@@ -13,6 +13,12 @@ class CVierOpRijDlg : public CDialog
 public:
 	CVierOpRijDlg(CWnd* pParent = NULL);	// standard constructor
 
+	class CMijnZetBedenker : public CZetBedenker 
+	{
+	public:
+		CMijnZetBedenker(const VierOpRijVeld& veld):CZetBedenker(veld){}
+	};
+
 // Dialog Data
 	enum { IDD = IDD_VIEROPRIJ_DIALOG };
 
@@ -21,12 +27,17 @@ public:
 
 	void Pleur(int plek);
 
+	void AsyncBedenk(CMijnZetBedenker* pBedenker);
+	void BedenkResultaat(CMijnZetBedenker* pBedenker);
+
 
 // Implementation
 protected:
 	HICON m_hIcon;
 
 	CVierOpRijViewWnd m_VierOpRijWnd;
+
+	CMijnZetBedenker* m_BezigeBedenkerPtr;
 
 	// Generated message map functions
 	virtual BOOL OnInitDialog();

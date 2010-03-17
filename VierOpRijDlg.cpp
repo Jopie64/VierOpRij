@@ -17,7 +17,8 @@
 
 
 CVierOpRijDlg::CVierOpRijDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CVierOpRijDlg::IDD, pParent)
+:	CDialog(CVierOpRijDlg::IDD, pParent),
+	m_BezigeBedenkerPtr(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -89,26 +90,56 @@ HCURSOR CVierOpRijDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void CVierOpRijDlg::AsyncBedenk(CMijnZetBedenker* pBedenker)
+{
+	try
+	{
+		pBedenker->BedenkZet(13);
+	}
+	catch(std::exception&)
+	{
+		AfxMessageBox(L"Oeps, maak even een denkfout...");
+	}
+	CMainTd::I()->PostCallback(simplebind(&CVierOpRijDlg::BedenkResultaat, this, pBedenker));
+}
+
+void CVierOpRijDlg::BedenkResultaat(CMijnZetBedenker* pBedenker)
+{
+	if(m_BezigeBedenkerPtr == pBedenker)
+	{
+		if(m_BezigeBedenkerPtr->Zet() < 0)
+			AfxMessageBox(L"Ik weet nix.. Verzin jij maar wat voor mij.");
+		else
+			Pleur(m_BezigeBedenkerPtr->Zet());
+		m_BezigeBedenkerPtr = NULL;
+	}
+
+	delete pBedenker;
+}
+
 
 void CVierOpRijDlg::Pleur(int plek)
 {
-	if(plek >= 0)
+	try
 	{
-		m_VierOpRijWnd.Pleur(plek);
-		switch(m_VierOpRijWnd.Veld().Win())
+		if(plek >= 0)
 		{
-		case 1: AfxMessageBox(L"Rood heeft gewonnen. Blij."); break;
-		case 2: AfxMessageBox(L"Geel heeft gewonnen. Blij."); break;
+			m_VierOpRijWnd.Pleur(plek);
+			m_BezigeBedenkerPtr = NULL;
+			switch(m_VierOpRijWnd.Veld().Win())
+			{
+			case 1: AfxMessageBox(L"Rood heeft gewonnen. Blij."); break;
+			case 2: AfxMessageBox(L"Geel heeft gewonnen. Blij."); break;
+			}
+		}
+		if(m_VierOpRijWnd.Veld().Beurt() == 2 || plek < 0)
+		{
+			Threading::ExecAsync(simplebind(&CVierOpRijDlg::AsyncBedenk, this, m_BezigeBedenkerPtr = new CMijnZetBedenker(m_VierOpRijWnd.Veld())));
 		}
 	}
-	if(m_VierOpRijWnd.Veld().Beurt() == 2 || plek < 0)
+	catch(std::exception&)
 	{
-		CZetBedenker bedenker;
-		int besteZet = bedenker.BedenkZet(m_VierOpRijWnd.Veld(), 13);
-		if(besteZet < 0)
-			AfxMessageBox(L"Ik weet nix.. Verzin jij maar wat voor mij.");
-		else
-			Pleur(besteZet);
+		AfxMessageBox(L"Hee joh, dat kan helemaal niet!");
 	}
 }
 

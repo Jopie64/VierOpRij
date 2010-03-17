@@ -181,10 +181,9 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 	return alpha;
 }
 
-int CZetBedenker::BedenkZet(const VierOpRijVeld& veld, int zoekDiepte)
+int CZetBedenker::BedenkZet(int zoekDiepte)
 {
-	int besteZet = -1;
-	BepaalScore(veld, zoekDiepte, minMax, plusMax, &besteZet);
-	return besteZet;
+	BepaalScore(m_Veld, zoekDiepte, minMax, plusMax, &m_Zet);
+	return m_Zet;
 }
 
