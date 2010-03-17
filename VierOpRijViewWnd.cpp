@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "VierOpRij.h"
 #include "VierOpRijViewWnd.h"
-
+#include <sstream>
 
 // CVierOpRijViewWnd
 
@@ -36,6 +36,31 @@ void CVierOpRijViewWnd::OnPaint()
 	CRect rectClient;
 	GetClientRect(&rectClient);
 	dc.FillSolidRect(rectClient, RGB(255,255,255));
+
+	CRect rectScores = rectClient;
+	rectScores.bottom = rectClient.top + 20;
+
+	dc.SetTextColor(RGB(0, 0, 0));
+	dc.SetBkMode(TRANSPARENT);
+	for(int x = 0; x < VierOpRijVeld::Sm_Breedte; ++x)
+	{
+		if(!m_Scores[x].m_bBekend)
+			continue; //Score niet bekend. Dus maar niet tekenen...
+
+		CRect rectVakje(
+			(int)(rectScores.left   + x       * (1.0 * rectScores.Width() / VierOpRijVeld::Sm_Breedte)),
+			rectScores.top,
+
+			(int)(rectScores.left   + (x + 1) * (1.0 * rectScores.Width() / VierOpRijVeld::Sm_Breedte)),
+			rectScores.bottom);
+
+		std::wstringstream score;
+		score << m_Scores[x].m_Waarde;
+		dc.DrawText(score.str().c_str(), rectVakje, 0);
+	}
+
+	rectClient.top = rectScores.bottom + 1;
+
 
 	for(int x = 0; x < VierOpRijVeld::Sm_Breedte; ++x)
 		for(int y = 0; y < VierOpRijVeld::Sm_Hoogte; ++y)

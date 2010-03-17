@@ -167,6 +167,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 			alpha = __max(alpha, zetScore);
 		else
 		{
+			ScoreBepaald(zetVolgorde[i], zetScore);
 			if(zetScore > alpha)
 			{
 				alpha = zetScore;

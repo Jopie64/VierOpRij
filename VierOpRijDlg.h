@@ -7,6 +7,8 @@
 #include "VierOpRijViewWnd.h"
 
 // CVierOpRijDlg dialog
+
+
 class CVierOpRijDlg : public CDialog
 {
 // Construction
@@ -16,7 +18,19 @@ public:
 	class CMijnZetBedenker : public CZetBedenker 
 	{
 	public:
-		CMijnZetBedenker(const VierOpRijVeld& veld):CZetBedenker(veld){}
+		CMijnZetBedenker(const VierOpRijVeld& veld, CVierOpRijDlg* dlg):CZetBedenker(veld),m_Dlg(dlg){}
+
+		virtual void ScoreBepaald(int plek, int score);
+
+		CVierOpRijDlg* m_Dlg;
+
+	};
+
+	struct SScoreBepaald
+	{
+		CMijnZetBedenker* pBedenker;
+		int plek;
+		int score;
 	};
 
 // Dialog Data
@@ -28,8 +42,10 @@ public:
 	void StopBedenker();
 	void Pleur(int plek);
 
+	void StartBedenker();
 	void AsyncBedenk(CMijnZetBedenker* pBedenker);
 	void BedenkResultaat(CMijnZetBedenker* pBedenker);
+	void ScoreBepaald(SScoreBepaald params);
 
 
 // Implementation

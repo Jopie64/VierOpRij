@@ -103,6 +103,24 @@ void CVierOpRijDlg::AsyncBedenk(CMijnZetBedenker* pBedenker)
 	CMainTd::I()->PostCallback(simplebind(&CVierOpRijDlg::BedenkResultaat, this, pBedenker));
 }
 
+void CVierOpRijDlg::CMijnZetBedenker::ScoreBepaald(int plek, int score)
+{
+	SScoreBepaald params;
+	params.pBedenker	= this;
+	params.plek			= plek;
+	params.score		= score;
+	CMainTd::I()->PostCallback(simplebind(&CVierOpRijDlg::ScoreBepaald, m_Dlg, params));
+}
+
+
+void CVierOpRijDlg::ScoreBepaald(SScoreBepaald params)
+{
+	if(m_BezigeBedenkerPtr != params.pBedenker)
+		return; //Niet deze bedenker meer...
+	
+	m_VierOpRijWnd.SetScore(params.plek, params.score);
+}
+
 void CVierOpRijDlg::BedenkResultaat(CMijnZetBedenker* pBedenker)
 {
 	if(m_BezigeBedenkerPtr == pBedenker)
@@ -125,6 +143,13 @@ void CVierOpRijDlg::StopBedenker()
 	m_BezigeBedenkerPtr = NULL;
 }
 
+void CVierOpRijDlg::StartBedenker()
+{
+	Threading::ExecAsync(simplebind(&CVierOpRijDlg::AsyncBedenk, this, 
+				m_BezigeBedenkerPtr = new CMijnZetBedenker(m_VierOpRijWnd.Veld(), this)));
+	m_VierOpRijWnd.ResetScores();
+}
+
 void CVierOpRijDlg::Pleur(int plek)
 {
 	try
@@ -139,10 +164,9 @@ void CVierOpRijDlg::Pleur(int plek)
 			case 2: AfxMessageBox(L"Geel heeft gewonnen. Blij."); break;
 			}
 		}
-		if(m_VierOpRijWnd.Veld().Beurt() == 2 || plek < 0)
-		{
-			Threading::ExecAsync(simplebind(&CVierOpRijDlg::AsyncBedenk, this, m_BezigeBedenkerPtr = new CMijnZetBedenker(m_VierOpRijWnd.Veld())));
-		}
+//		if(m_VierOpRijWnd.Veld().Beurt() == 2 || plek < 0)
+		if(plek < 0)
+			StartBedenker();
 	}
 	catch(std::exception&)
 	{

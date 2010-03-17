@@ -38,6 +38,8 @@ public:
 	int  Zet()const{return m_Zet;}
 	void Abort(){m_bAbort = true;}
 
+	virtual void ScoreBepaald(int plek, int score){}
+
 private:
 	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
 
