@@ -90,6 +90,25 @@ HCURSOR CVierOpRijDlg::OnQueryDragIcon()
 }
 
 
+void CVierOpRijDlg::Pleur(int plek)
+{
+	m_VierOpRijWnd.Pleur(plek);
+	switch(m_VierOpRijWnd.Veld().Win())
+	{
+	case 1: AfxMessageBox(L"Rood heeft gewonnen. Blij."); break;
+	case 2: AfxMessageBox(L"Geel heeft gewonnen. Blij."); break;
+	}
+	if(m_VierOpRijWnd.Veld().Beurt() == 2)
+	{
+		int besteZet = m_VierOpRijWnd.Veld().BesteZet(10);
+		if(besteZet < 0)
+			AfxMessageBox(L"Ik weet nix.. Verzin jij maar wat voor mij.");
+		else
+			Pleur(besteZet);
+	}
+}
+
+
 BOOL CVierOpRijDlg::PreTranslateMessage(MSG* pMsg)
 {
 	try
@@ -107,12 +126,7 @@ BOOL CVierOpRijDlg::PreTranslateMessage(MSG* pMsg)
 					char plek = pMsg->wParam - '0';
 					if(plek >= 1 && plek <= 7)
 					{
-						m_VierOpRijWnd.Pleur(plek - 1);
-						switch(m_VierOpRijWnd.Veld().Win())
-						{
-						case 1: AfxMessageBox(L"Rood heeft gewonnen. Blij."); break;
-						case 2: AfxMessageBox(L"Geel heeft gewonnen. Blij."); break;
-						}
+						Pleur(plek-1);
 						return TRUE;
 					}
 				}

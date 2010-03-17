@@ -13,6 +13,9 @@ public:
 	char Win()const;
 	char Wie(int x, int y)const;
 
+	int	 BesteZet(int zoekDiepte)const;
+	char Beurt()const{return m_Beurt;}
+
 private:
 	int PleurUnchecked(int plek);
 	char VolgendeBeurt();
@@ -22,5 +25,6 @@ private:
 	char m_Beurt;
 	char m_Win;
 
+	friend class CAlphabeta;
 
 };

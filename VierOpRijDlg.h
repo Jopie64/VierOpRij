@@ -19,6 +19,8 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 
+	void Pleur(int plek);
+
 
 // Implementation
 protected:

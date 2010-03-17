@@ -1,6 +1,7 @@
 
 *.suo
 Debug/
+Release/
 
 *.aps
 *.ncb
