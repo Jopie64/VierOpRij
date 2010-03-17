@@ -32,10 +32,14 @@ private:
 class CZetBedenker
 {
 public:
-	CZetBedenker(const VierOpRijVeld& veld):m_Veld(veld),m_Zet(-1),m_bAbort(false){}
+	static const int Sm_PlusMax = 1000000000;
+	static const int Sm_MinMax  = -Sm_PlusMax;
+
+	CZetBedenker(const VierOpRijVeld& veld):m_Veld(veld),m_Zet(-1),m_bAbort(false),m_bWinst(false){}
 	int BedenkZet(int zoekDiepte);
 
 	int  Zet()const{return m_Zet;}
+	bool Winst()const{return m_bWinst;}
 	void Abort(){m_bAbort = true;}
 
 	virtual void ScoreBepaald(int plek, int score){}
@@ -45,5 +49,6 @@ private:
 
 	VierOpRijVeld	m_Veld;
 	int				m_Zet;
+	bool			m_bWinst;
 	bool			m_bAbort;
 };

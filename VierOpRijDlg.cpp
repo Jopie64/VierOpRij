@@ -32,6 +32,7 @@ BEGIN_MESSAGE_MAP(CVierOpRijDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -94,7 +95,7 @@ void CVierOpRijDlg::AsyncBedenk(CMijnZetBedenker* pBedenker)
 {
 	try
 	{
-		pBedenker->BedenkZet(13);
+		pBedenker->BedenkZet(14);
 	}
 	catch(std::exception&)
 	{
@@ -125,10 +126,13 @@ void CVierOpRijDlg::BedenkResultaat(CMijnZetBedenker* pBedenker)
 {
 	if(m_BezigeBedenkerPtr == pBedenker)
 	{
+		bool W_bWinst = m_BezigeBedenkerPtr->Winst();
 		if(m_BezigeBedenkerPtr->Zet() < 0)
 			AfxMessageBox(L"Ik weet nix.. Verzin jij maar wat voor mij.");
 		else
 			Pleur(m_BezigeBedenkerPtr->Zet());
+		if(W_bWinst)
+			AfxMessageBox(L"Geef maar op! Ik win toch!");
 		StopBedenker();
 	}
 
@@ -210,4 +214,17 @@ BOOL CVierOpRijDlg::PreTranslateMessage(MSG* pMsg)
 		return TRUE;
 	}
 	return CDialog::PreTranslateMessage(pMsg);
+}
+
+void CVierOpRijDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialog::OnSize(nType, cx, cy);
+	if(!::IsWindow(m_VierOpRijWnd.m_hWnd))
+		return;
+
+	CRect rectClient;
+	GetClientRect(rectClient);
+	rectClient.DeflateRect(10,10);
+	m_VierOpRijWnd.MoveWindow(rectClient);
+
 }

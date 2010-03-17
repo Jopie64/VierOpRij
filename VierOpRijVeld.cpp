@@ -147,13 +147,11 @@ char VierOpRijVeld::Win(int xHint, int yHint)
 }
 
 const int zetVolgorde[] = {3, 2, 4, 1, 5, 0, 6};
-const int plusMax = 1000000000;
-const int minMax  = -plusMax;
 
 int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
 {
 	if(veld.Win() != 0)
-		return minMax;
+		return Sm_MinMax;
 	if(zoekDiepte == 0 || m_bAbort)
 		return 0;//Eventueel evalueren...
 
@@ -173,6 +171,8 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 				alpha = zetScore;
 				*pZet = zetVolgorde[i];						
 			}
+			if(zetScore == Sm_PlusMax)
+				m_bWinst = true;
 		}
 
 		if(beta <= alpha)
@@ -184,7 +184,8 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 
 int CZetBedenker::BedenkZet(int zoekDiepte)
 {
-	BepaalScore(m_Veld, zoekDiepte, minMax, plusMax, &m_Zet);
+	m_bWinst = false;
+	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, &m_Zet);
 	return m_Zet;
 }
 

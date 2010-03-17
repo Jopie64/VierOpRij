@@ -55,8 +55,14 @@ void CVierOpRijViewWnd::OnPaint()
 			rectScores.bottom);
 
 		std::wstringstream score;
-		score << m_Scores[x].m_Waarde;
-		dc.DrawText(score.str().c_str(), rectVakje, 0);
+		switch(m_Scores[x].m_Waarde)
+		{
+		case CZetBedenker::Sm_PlusMax:	score << "Winst"; break;
+		case CZetBedenker::Sm_MinMax:	score << "Verlies"; break;
+		default: score << m_Scores[x].m_Waarde;
+		}
+		
+		dc.DrawText(score.str().c_str(), rectVakje, DT_CENTER);
 	}
 
 	rectClient.top = rectScores.bottom + 1;
