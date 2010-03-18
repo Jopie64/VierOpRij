@@ -13,7 +13,7 @@
 
 // CVierOpRijDlg dialog
 
-
+const int denkDiepte = 16;
 
 
 CVierOpRijDlg::CVierOpRijDlg(CWnd* pParent /*=NULL*/)
@@ -95,7 +95,7 @@ void CVierOpRijDlg::AsyncBedenk(CMijnZetBedenker* pBedenker)
 {
 	try
 	{
-		pBedenker->BedenkZet(14);
+		pBedenker->BedenkZet(denkDiepte);
 	}
 	catch(std::exception&)
 	{
