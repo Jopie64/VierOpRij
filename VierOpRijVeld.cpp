@@ -3,7 +3,8 @@
 
 VierOpRijVeld::VierOpRijVeld(void)
 :	m_Beurt(1),
-	m_Win(0)
+	m_Win(0),
+	m_Aantal(0)
 {
 	memset(m_Veld,0,sizeof(m_Veld));
 }
@@ -43,6 +44,7 @@ int VierOpRijVeld::PleurUnchecked(int plek)
 		if(m_Veld[plek][i] == 0)
 		{
 			m_Veld[plek][i] = VolgendeBeurt();
+			++m_Aantal;
 			m_Win = Win(plek, i);
 			return i;
 		}
@@ -153,20 +155,22 @@ int PakVolgordePlek(int plek)
 	return zetVolgorde[plek % 7];
 }
 
-int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int volgorde, int* pZet)
+int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
 {
 	if(veld.Win() != 0)
 		return Sm_MinMax;
-	if(zoekDiepte == 0 || m_bAbort)
+	if( zoekDiepte == 0 ||  //Niet meer verder zoeken (anders duurt 't beetje lang hè)
+		m_bAbort ||			//Stoppen maar. Gebruiker heeft geen geduld.
+		veld.m_Aantal >= VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte) //Veld zit vol. Heeft ook niet veel zin meer hè...
 		return 0;//Eventueel evalueren...
 
 	VierOpRijVeld veldMetZet(veld);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
-		int plek = PakVolgordePlek(volgorde + i);
+		int plek = PakVolgordePlek(veld.m_Aantal + i);
 		if(veldMetZet.PleurUnchecked(plek) < 0)
 			continue;//Kan niet hier...
-		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, volgorde + 1, NULL);
+		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, NULL);
 		if(pZet == NULL)
 			alpha = __max(alpha, zetScore);
 		else
@@ -175,7 +179,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 			if(zetScore > alpha)
 			{
 				alpha = zetScore;
-				*pZet = plek;						
+				*pZet = plek;
 			}
 			if(zetScore == Sm_PlusMax)
 				m_bWinst = true;
@@ -191,7 +195,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 int CZetBedenker::BedenkZet(int zoekDiepte)
 {
 	m_bWinst = false;
-	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, 0, &m_Zet);
+	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, &m_Zet);
 	return m_Zet;
 }
 

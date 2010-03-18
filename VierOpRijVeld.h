@@ -23,6 +23,7 @@ private:
 	char m_Veld[Sm_Breedte][Sm_Hoogte];
 	char m_Beurt;
 	char m_Win;
+	int  m_Aantal;
 
 	friend class CZetBedenker;
 
@@ -45,7 +46,7 @@ public:
 	virtual void ScoreBepaald(int plek, int score){}
 
 private:
-	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int volgorde, int* pZet);
+	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
 
 	VierOpRijVeld	m_Veld;
 	int				m_Zet;
