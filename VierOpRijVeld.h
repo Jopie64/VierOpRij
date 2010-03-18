@@ -45,7 +45,7 @@ public:
 	virtual void ScoreBepaald(int plek, int score){}
 
 private:
-	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
+	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int volgorde, int* pZet);
 
 	VierOpRijVeld	m_Veld;
 	int				m_Zet;

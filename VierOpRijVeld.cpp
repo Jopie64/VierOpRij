@@ -148,7 +148,12 @@ char VierOpRijVeld::Win(int xHint, int yHint)
 
 const int zetVolgorde[] = {3, 2, 4, 1, 5, 0, 6};
 
-int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
+int PakVolgordePlek(int plek)
+{
+	return zetVolgorde[plek % 7];
+}
+
+int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int volgorde, int* pZet)
 {
 	if(veld.Win() != 0)
 		return Sm_MinMax;
@@ -158,18 +163,19 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 	VierOpRijVeld veldMetZet(veld);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
-		if(veldMetZet.PleurUnchecked(zetVolgorde[i]) < 0)
+		int plek = PakVolgordePlek(volgorde + i);
+		if(veldMetZet.PleurUnchecked(plek) < 0)
 			continue;//Kan niet hier...
-		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, NULL);
+		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, volgorde + 1, NULL);
 		if(pZet == NULL)
 			alpha = __max(alpha, zetScore);
 		else
 		{
-			ScoreBepaald(zetVolgorde[i], zetScore);
+			ScoreBepaald(plek, zetScore);
 			if(zetScore > alpha)
 			{
 				alpha = zetScore;
-				*pZet = zetVolgorde[i];						
+				*pZet = plek;						
 			}
 			if(zetScore == Sm_PlusMax)
 				m_bWinst = true;
@@ -185,7 +191,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 int CZetBedenker::BedenkZet(int zoekDiepte)
 {
 	m_bWinst = false;
-	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, &m_Zet);
+	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, 0, &m_Zet);
 	return m_Zet;
 }
 
