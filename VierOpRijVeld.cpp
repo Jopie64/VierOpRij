@@ -155,7 +155,7 @@ char VierOpRijVeld::Win(int xHint, int yHint)
 }
 
 
-
+/*
 int CZetBedenker::Evalueer(const VierOpRijVeld& veld)
 {
 	int waarde;
@@ -191,12 +191,38 @@ int CZetBedenker::Evalueer(const VierOpRijVeld& veld, int diepte, bool eerste)
 
 	return waarde;
 }
+*/
+int CZetBedenker::Evalueer(const VierOpRijVeld& veld)
+{
+	int waarde = 0;
+	char beurt = veld.Beurt();
+	for(int i = 0; i < 6; ++i)
+	{
+		VierOpRijVeld werkVeld(veld);
+		char win = SpeelWillekeurigSpel(werkVeld, 10);
+		if(win == beurt)
+			++waarde;
+		else if(win != 0)
+			--waarde;
+	}
+	return waarde;
+}
+
+char CZetBedenker::SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte)
+{
+	if(veld.Win() != 0)
+		return veld.Win();
+	if(veld.Vol() || diepte == 0)
+		return 0;
+	veld.PleurUnchecked(rand() % 7);
+	return SpeelWillekeurigSpel(veld, diepte - 1);	
+}
 
 const int zetVolgorde[] = {3, 2, 4, 1, 5, 0, 6};
 
 int PakVolgordePlek(const int* volgorde, int plek)
 {
-	return volgorde[plek % 7];
+	return volgorde[plek % VierOpRijVeld::Sm_Breedte];
 }
 
 /*class CVolgordeBedenker : public CZetBedenker
@@ -250,7 +276,7 @@ void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[Vi
 		if(werkVeld.PleurUnchecked(plek) < 0)
 			plekScore[i].score = Sm_MinMax;
 		else
-			plekScore[i].score = BepaalScore(veld, 0, Sm_MinMax, Sm_PlusMax, NULL);
+			plekScore[i].score = BepaalScore(werkVeld, 0, Sm_MinMax, Sm_PlusMax, NULL);
 //		if(plekScore[i].score != 0)
 //			printf("hier");
 	}

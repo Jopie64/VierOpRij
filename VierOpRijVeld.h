@@ -51,7 +51,7 @@ public:
 	virtual void ScoreBepaald(int plek, int score){}
 
 private:
-	int Evalueer(const VierOpRijVeld& veld, int diepte, bool eerste);
+	char SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte);
 	int Evalueer(const VierOpRijVeld& veld);
 	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
 	void BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte]);
