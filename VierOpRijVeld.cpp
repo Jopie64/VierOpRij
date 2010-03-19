@@ -194,12 +194,13 @@ int CZetBedenker::Evalueer(const VierOpRijVeld& veld, int diepte, bool eerste)
 */
 int CZetBedenker::Evalueer(const VierOpRijVeld& veld)
 {
+	++m_statEvals;
 	int waarde = 0;
 	char beurt = veld.Beurt();
-	for(int i = 0; i < 6; ++i)
+	for(int i = 0; i < 0; ++i)
 	{
 		VierOpRijVeld werkVeld(veld);
-		char win = SpeelWillekeurigSpel(werkVeld, 10);
+		char win = SpeelWillekeurigSpel(werkVeld, 5);
 		if(win == beurt)
 			++waarde;
 		else if(win != 0)
@@ -290,7 +291,10 @@ void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[Vi
 int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
 {
 	if(veld.Win() != 0)
+	{
+		++m_statWins;
 		return Sm_MinMax;   //Pff, vorige speler heeft al gewonnen. Lekker eerlijk.
+	}
 	if(	m_bAbort ||			//Stoppen maar. Gebruiker heeft geen geduld.
 		veld.m_Aantal >= VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte) //Veld zit vol. Heeft ook niet veel zin meer hè...
 		return 0;
@@ -301,8 +305,8 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 		volgorde[i] = PakVolgordePlek(zetVolgorde, i + veld.m_Aantal);
 //	memcpy(volgorde, zetVolgorde, sizeof(volgorde));
-	if(zoekDiepte > 4)
-		BepaalVolgorde(veld, volgorde);
+//	if(zoekDiepte > 4)
+//		BepaalVolgorde(veld, volgorde);
 
 	VierOpRijVeld veldMetZet(veld);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
@@ -311,6 +315,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 //		int plek = PakVolgordePlek(zetVolgorde, i + veld.m_Aantal);
 		if(veldMetZet.PleurUnchecked(plek) < 0)
 			continue;//Kan niet hier...
+		++m_statPleurs;
 		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, NULL);
 		if(pZet == NULL)
 			alpha = __max(alpha, zetScore);
@@ -336,6 +341,9 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 int CZetBedenker::BedenkZet(int zoekDiepte)
 {
 	m_bWinst = false;
+	if(zoekDiepte < 0)
+		zoekDiepte = max(16, m_Veld.m_Aantal);
+	m_ZoekDiepte = zoekDiepte;
 	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, &m_Zet);
 	return m_Zet;
 }

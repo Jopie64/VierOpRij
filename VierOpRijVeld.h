@@ -41,7 +41,9 @@ public:
 	static const int Sm_PlusMax = 1000000000;
 	static const int Sm_MinMax  = -Sm_PlusMax;
 
-	CZetBedenker(const VierOpRijVeld& veld):m_Veld(veld),m_Zet(-1),m_bAbort(false),m_bWinst(false){}
+	CZetBedenker(const VierOpRijVeld& veld)
+	:	m_Veld(veld),m_Zet(-1),m_bAbort(false),m_bWinst(false),
+		m_statEvals(0),m_statPleurs(0), m_statWins(0), m_ZoekDiepte(0){}
 	int BedenkZet(int zoekDiepte);
 
 	int  Zet()const{return m_Zet;}
@@ -60,4 +62,10 @@ private:
 	int				m_Zet;
 	bool			m_bWinst;
 	bool			m_bAbort;
+
+public:
+	int				m_statEvals;
+	int				m_statPleurs;
+	int				m_statWins;
+	int				m_ZoekDiepte;
 };

@@ -46,6 +46,7 @@ public:
 	void AsyncBedenk(CMijnZetBedenker* pBedenker);
 	void BedenkResultaat(CMijnZetBedenker* pBedenker);
 	void ScoreBepaald(SScoreBepaald params);
+	void StatsBijwerken();
 
 
 // Implementation
@@ -56,6 +57,8 @@ protected:
 
 	CMijnZetBedenker* m_BezigeBedenkerPtr;
 
+	void	RelocateControls();
+
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
@@ -64,4 +67,5 @@ protected:
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

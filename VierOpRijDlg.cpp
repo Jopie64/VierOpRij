@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "VierOpRij.h"
 #include "VierOpRijDlg.h"
+#include <sstream>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -13,7 +14,7 @@
 
 // CVierOpRijDlg dialog
 
-const int denkDiepte = 11;
+const int denkDiepte = -1;
 
 
 CVierOpRijDlg::CVierOpRijDlg(CWnd* pParent /*=NULL*/)
@@ -33,6 +34,7 @@ BEGIN_MESSAGE_MAP(CVierOpRijDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
 	ON_WM_SIZE()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -51,6 +53,11 @@ BOOL CVierOpRijDlg::OnInitDialog()
 	GetClientRect(&rectClient);
 	rectClient.DeflateRect(10,10);
 	m_VierOpRijWnd.Create(NULL, NULL, WS_VISIBLE | WS_CHILD, rectClient, this, 0xFF);
+
+	SetDlgItemText(IDC_EDIT_LEVEL, L"-1");
+	SetTimer(0, 500, NULL);
+
+	RelocateControls();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -95,7 +102,11 @@ void CVierOpRijDlg::AsyncBedenk(CMijnZetBedenker* pBedenker)
 {
 	try
 	{
-		pBedenker->BedenkZet(denkDiepte);
+		//pBedenker->BedenkZet(denkDiepte);
+		CString level;
+		GetDlgItemText(IDC_EDIT_LEVEL, level);
+		int diepte = _wtol(level);
+		pBedenker->BedenkZet(diepte);
 	}
 	catch(std::exception& C_e)
 	{
@@ -118,9 +129,23 @@ void CVierOpRijDlg::ScoreBepaald(SScoreBepaald params)
 {
 	if(m_BezigeBedenkerPtr != params.pBedenker)
 		return; //Niet deze bedenker meer...
-	
 	m_VierOpRijWnd.SetScore(params.plek, params.score);
+	StatsBijwerken();
 }
+
+void CVierOpRijDlg::StatsBijwerken()
+{
+	if(m_BezigeBedenkerPtr == NULL)
+		return; //Niet deze bedenker meer...
+	std::wstringstream stats;
+	stats 
+		<< "Diepte: " << m_BezigeBedenkerPtr->m_ZoekDiepte
+		<< "  Evals: " << m_BezigeBedenkerPtr->m_statEvals
+		<< "  Pleurs: " << m_BezigeBedenkerPtr->m_statPleurs
+		<< "  Wins: " << m_BezigeBedenkerPtr->m_statWins;
+	m_VierOpRijWnd.SetStats(stats.str());
+}
+
 
 void CVierOpRijDlg::BedenkResultaat(CMijnZetBedenker* pBedenker)
 {
@@ -181,6 +206,9 @@ void CVierOpRijDlg::Pleur(int plek)
 
 BOOL CVierOpRijDlg::PreTranslateMessage(MSG* pMsg)
 {
+	if(GetFocus() == GetDlgItem(IDC_EDIT_LEVEL))
+		return __super::PreTranslateMessage(pMsg);
+
 	try
 	{
 		switch(pMsg->message)
@@ -217,7 +245,7 @@ BOOL CVierOpRijDlg::PreTranslateMessage(MSG* pMsg)
 	}
 	catch(std::exception& C_e)
 	{
-		//AfxMessageBox(C_e.what());
+		AfxMessageBox(L"Foutje: " + CString(C_e.what()));
 		return TRUE;
 	}
 	return CDialog::PreTranslateMessage(pMsg);
@@ -228,10 +256,33 @@ void CVierOpRijDlg::OnSize(UINT nType, int cx, int cy)
 	CDialog::OnSize(nType, cx, cy);
 	if(!::IsWindow(m_VierOpRijWnd.m_hWnd))
 		return;
+	RelocateControls();
+}
+
+void CVierOpRijDlg::RelocateControls()
+{
+	CRect rectLevel;
+	GetDlgItem(IDC_EDIT_LEVEL)->GetWindowRect(rectLevel);
+
+	ScreenToClient(rectLevel);
 
 	CRect rectClient;
 	GetClientRect(rectClient);
 	rectClient.DeflateRect(10,10);
+
+	rectClient.top = rectLevel.bottom + 1;
+
 	m_VierOpRijWnd.MoveWindow(rectClient);
 
+}
+
+void CVierOpRijDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	CDialog::OnTimer(nIDEvent);
+	switch(nIDEvent)
+	{
+	case 0:
+		StatsBijwerken();
+		break;
+	}
 }
