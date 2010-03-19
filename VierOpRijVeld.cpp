@@ -250,7 +250,7 @@ void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[Vi
 		if(werkVeld.PleurUnchecked(plek) < 0)
 			plekScore[i].score = Sm_MinMax;
 		else
-			plekScore[i].score = BepaalScore(veld, 0, Sm_MinMax, Sm_PlusMax, NULL);
+			plekScore[i].score = BepaalScore(werkVeld, 0, Sm_MinMax, Sm_PlusMax, NULL);
 //		if(plekScore[i].score != 0)
 //			printf("hier");
 	}
