@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "VierOpRijVeld.h"
+#include <algorithm>
 
 VierOpRijVeld::VierOpRijVeld(void)
 :	m_Beurt(1),
@@ -153,12 +154,7 @@ char VierOpRijVeld::Win(int xHint, int yHint)
 	return 0; //Niemand gewonnen
 }
 
-const int zetVolgorde[] = {3, 2, 4, 1, 5, 0, 6};
 
-int PakVolgordePlek(int plek)
-{
-	return zetVolgorde[plek % 7];
-}
 
 int CZetBedenker::Evalueer(const VierOpRijVeld& veld)
 {
@@ -196,6 +192,75 @@ int CZetBedenker::Evalueer(const VierOpRijVeld& veld, int diepte, bool eerste)
 	return waarde;
 }
 
+const int zetVolgorde[] = {3, 2, 4, 1, 5, 0, 6};
+
+int PakVolgordePlek(const int* volgorde, int plek)
+{
+	return volgorde[plek % 7];
+}
+
+/*class CVolgordeBedenker : public CZetBedenker
+{
+public:
+	CVolgordeBedenker(const VierOpRijVeld& veld):CZetBedenker(veld){}//{memset(&m_Score, 0, sizeof(m_Score));}
+
+	virtual void ScoreBepaald(int plek, int score)
+	{
+		m_Score[plek] = score;
+	}
+
+	int m_Score[VierOpRijVeld::Sm_Breedte];
+};
+
+void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte])
+{
+	CVolgordeBedenker volgordeBedenker(veld);
+	int plek = volgordeBedenker.BedenkZet(1);
+	memcpy(volgorde, zetVolgorde, sizeof(zetVolgorde));
+	for(int x = 0; x < VierOpRijVeld::Sm_Breedte; ++x)
+		if(volgorde[x] == plek)
+		{
+			if(x == 0)
+				return;
+			std::swap(volgorde[x], volgorde[0]);
+			return;
+		}
+}
+*/
+struct PlekScore
+{
+	int plek;
+	int score;
+};
+
+bool PlekScoreSort(const PlekScore& left, const PlekScore& right)
+{
+	return right.score < left.score;
+}
+
+void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte])
+{
+	PlekScore plekScore[VierOpRijVeld::Sm_Breedte];
+	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
+	{
+		int plek = PakVolgordePlek(volgorde, i);
+//		int plek = i;
+		plekScore[i].plek = plek;
+		VierOpRijVeld werkVeld(veld);
+		if(werkVeld.PleurUnchecked(plek) < 0)
+			plekScore[i].score = Sm_MinMax;
+		else
+			plekScore[i].score = BepaalScore(veld, 0, Sm_MinMax, Sm_PlusMax, NULL);
+//		if(plekScore[i].score != 0)
+//			printf("hier");
+	}
+
+	std::sort(plekScore, plekScore + VierOpRijVeld::Sm_Breedte, PlekScoreSort);
+	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
+		volgorde[i] = plekScore[i].plek;
+
+}
+
 int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
 {
 	if(veld.Win() != 0)
@@ -206,10 +271,18 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 	if( zoekDiepte == 0)  //Niet meer verder zoeken (anders duurt 't beetje lang hè)
 		return Evalueer(veld);//Eventueel evalueren...
 
+	int volgorde[VierOpRijVeld::Sm_Breedte];
+	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
+		volgorde[i] = PakVolgordePlek(zetVolgorde, i + veld.m_Aantal);
+//	memcpy(volgorde, zetVolgorde, sizeof(volgorde));
+	if(zoekDiepte > 4)
+		BepaalVolgorde(veld, volgorde);
+
 	VierOpRijVeld veldMetZet(veld);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
-		int plek = PakVolgordePlek(veld.m_Aantal + i);
+		int plek = PakVolgordePlek(volgorde, i);
+//		int plek = PakVolgordePlek(zetVolgorde, i + veld.m_Aantal);
 		if(veldMetZet.PleurUnchecked(plek) < 0)
 			continue;//Kan niet hier...
 		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, NULL);

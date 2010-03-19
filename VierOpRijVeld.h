@@ -54,6 +54,7 @@ private:
 	int Evalueer(const VierOpRijVeld& veld, int diepte, bool eerste);
 	int Evalueer(const VierOpRijVeld& veld);
 	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
+	void BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte]);
 
 	VierOpRijVeld	m_Veld;
 	int				m_Zet;
