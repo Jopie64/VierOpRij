@@ -13,10 +13,15 @@ public:
 	char Win()const;
 	char Wie(int x, int y)const;
 
-	char Beurt()const{return m_Beurt;}
+	inline char Beurt()const{return m_Beurt;}
+
+	inline bool Vol()const{return m_Aantal == Sm_Breedte * Sm_Hoogte;}
+	void		BeurtOverslaan(){VolgendeBeurt();}
 
 private:
 	int PleurUnchecked(int plek);
+	inline void PlaatsUnchecked(int speler, int x, int y);
+	inline char WieUnchecked(int x, int y)const{return m_Veld[x][y];}
 	char VolgendeBeurt();
 	char Win(int xHint, int yHint);
 
@@ -46,6 +51,8 @@ public:
 	virtual void ScoreBepaald(int plek, int score){}
 
 private:
+	int Evalueer(const VierOpRijVeld& veld, int diepte);
+	int Evalueer(const VierOpRijVeld& veld);
 	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
 
 	VierOpRijVeld	m_Veld;

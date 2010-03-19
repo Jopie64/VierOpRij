@@ -13,7 +13,7 @@
 
 // CVierOpRijDlg dialog
 
-const int denkDiepte = 16;
+const int denkDiepte = 11;
 
 
 CVierOpRijDlg::CVierOpRijDlg(CWnd* pParent /*=NULL*/)
@@ -97,9 +97,9 @@ void CVierOpRijDlg::AsyncBedenk(CMijnZetBedenker* pBedenker)
 	{
 		pBedenker->BedenkZet(denkDiepte);
 	}
-	catch(std::exception&)
+	catch(std::exception& C_e)
 	{
-		AfxMessageBox(L"Oeps, maak even een denkfout...");
+		AfxMessageBox(L"Oeps, maak even een denkfout... " + CString(C_e.what()));
 	}
 	CMainTd::I()->PostCallback(simplebind(&CVierOpRijDlg::BedenkResultaat, this, pBedenker));
 }
@@ -193,6 +193,13 @@ BOOL CVierOpRijDlg::PreTranslateMessage(MSG* pMsg)
 				break;
 			case 'b':
 				Pleur(-1);
+				break;
+			case 'o':
+				{
+					VierOpRijVeld veld = m_VierOpRijWnd.Veld();
+					veld.BeurtOverslaan();
+					m_VierOpRijWnd.SetVeld(veld);
+				}
 				break;
 			default:
 				{

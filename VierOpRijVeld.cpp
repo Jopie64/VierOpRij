@@ -35,7 +35,7 @@ char VierOpRijVeld::Wie(int x, int y) const
 	if(x < 0 || x >= Sm_Breedte || y < 0 || y >= Sm_Hoogte)
 		throw std::runtime_error("Die valt dus buiten het veld. Niet zo slim.");
 
-	return m_Veld[x][y];
+	return WieUnchecked(x, y);
 }
 
 int VierOpRijVeld::PleurUnchecked(int plek)
@@ -43,13 +43,18 @@ int VierOpRijVeld::PleurUnchecked(int plek)
 	for(int i=0; i<Sm_Hoogte; ++i)
 		if(m_Veld[plek][i] == 0)
 		{
-			m_Veld[plek][i] = VolgendeBeurt();
-			++m_Aantal;
-			m_Win = Win(plek, i);
+			PlaatsUnchecked(VolgendeBeurt(), plek, i);
 			return i;
 		}
 	return -1;
 
+}
+
+void VierOpRijVeld::PlaatsUnchecked(int speler, int x, int y)
+{
+	m_Veld[x][y] = speler;
+	++m_Aantal;
+	m_Win = Win(x, y);
 }
 
 char VierOpRijVeld::Win() const
@@ -155,14 +160,47 @@ int PakVolgordePlek(int plek)
 	return zetVolgorde[plek % 7];
 }
 
+int CZetBedenker::Evalueer(const VierOpRijVeld& veld)
+{
+	int waarde;
+	VierOpRijVeld werkVeld(veld);
+	waarde = Evalueer(werkVeld, 2);
+//	waarde += BepaalScore(veld, 1, Sm_MinMax, Sm_PlusMax, NULL);
+	werkVeld.VolgendeBeurt();
+	waarde -= Evalueer(werkVeld, 2);
+	return waarde;
+}
+
+int CZetBedenker::Evalueer(const VierOpRijVeld& veld, int diepte)
+{
+	if(veld.Vol() || diepte == 0)
+		return 0;
+
+
+	int waarde = 0;
+	for(int x = 0; x < VierOpRijVeld::Sm_Breedte; ++x)
+		for(int y = 0; y < VierOpRijVeld::Sm_Hoogte; ++y)
+		{
+			if(veld.WieUnchecked(x, y) != 0)
+				continue;
+			VierOpRijVeld werkVeld(veld);
+			werkVeld.PlaatsUnchecked(werkVeld.Beurt(), x, y);
+			if(werkVeld.Win())
+				waarde += 1 + Evalueer(werkVeld, diepte - 1) * 10;
+		}
+
+	return waarde;
+}
+
 int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
 {
 	if(veld.Win() != 0)
 		return Sm_MinMax;
-	if( zoekDiepte == 0 ||  //Niet meer verder zoeken (anders duurt 't beetje lang hè)
-		m_bAbort ||			//Stoppen maar. Gebruiker heeft geen geduld.
+	if(	m_bAbort ||			//Stoppen maar. Gebruiker heeft geen geduld.
 		veld.m_Aantal >= VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte) //Veld zit vol. Heeft ook niet veel zin meer hè...
-		return 0;//Eventueel evalueren...
+		return 0;
+	if( zoekDiepte == 0)  //Niet meer verder zoeken (anders duurt 't beetje lang hè)
+		return Evalueer(veld);//Eventueel evalueren...
 
 	VierOpRijVeld veldMetZet(veld);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
