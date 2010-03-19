@@ -164,29 +164,33 @@ int CZetBedenker::Evalueer(const VierOpRijVeld& veld)
 {
 	int waarde;
 	VierOpRijVeld werkVeld(veld);
-	waarde = Evalueer(werkVeld, 2);
+	waarde = Evalueer(werkVeld, 2, true);
 //	waarde += BepaalScore(veld, 1, Sm_MinMax, Sm_PlusMax, NULL);
 	werkVeld.VolgendeBeurt();
-	waarde -= Evalueer(werkVeld, 2);
+	waarde -= Evalueer(werkVeld, 2, false);
 	return waarde;
 }
 
-int CZetBedenker::Evalueer(const VierOpRijVeld& veld, int diepte)
+int CZetBedenker::Evalueer(const VierOpRijVeld& veld, int diepte, bool eerste)
 {
 	if(veld.Vol() || diepte == 0)
 		return 0;
 
 
 	int waarde = 0;
-	for(int x = 0; x < VierOpRijVeld::Sm_Breedte; ++x)
-		for(int y = 0; y < VierOpRijVeld::Sm_Hoogte; ++y)
+	for(int y = 0; y < VierOpRijVeld::Sm_Hoogte; ++y)
+		for(int x = 0; x < VierOpRijVeld::Sm_Breedte; ++x)
 		{
 			if(veld.WieUnchecked(x, y) != 0)
 				continue;
 			VierOpRijVeld werkVeld(veld);
 			werkVeld.PlaatsUnchecked(werkVeld.Beurt(), x, y);
 			if(werkVeld.Win())
-				waarde += 1 + Evalueer(werkVeld, diepte - 1) * 10;
+			{
+				if(eerste && (y == 0 || veld.WieUnchecked(x, y - 1) != 0) )
+					return Sm_PlusMax; //Wint gelijk. Dus hoef niet meer verder te zoeken hè.
+				waarde += 1 + Evalueer(werkVeld, diepte - 1, false) * 10;
+			}
 		}
 
 	return waarde;
@@ -195,7 +199,7 @@ int CZetBedenker::Evalueer(const VierOpRijVeld& veld, int diepte)
 int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
 {
 	if(veld.Win() != 0)
-		return Sm_MinMax;
+		return Sm_MinMax;   //Pff, vorige speler heeft al gewonnen. Lekker eerlijk.
 	if(	m_bAbort ||			//Stoppen maar. Gebruiker heeft geen geduld.
 		veld.m_Aantal >= VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte) //Veld zit vol. Heeft ook niet veel zin meer hè...
 		return 0;
