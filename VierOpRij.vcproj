@@ -45,6 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="jstd"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -125,6 +126,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="jstd"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"
@@ -206,7 +208,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Threading.cpp"
+				RelativePath=".\jstd\Threading.cpp"
 				>
 			</File>
 			<File
@@ -244,7 +246,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Threading.h"
+				RelativePath=".\jstd\Threading.h"
 				>
 			</File>
 			<File
