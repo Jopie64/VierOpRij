@@ -71,12 +71,17 @@ void CVierOpRijViewWnd::OnPaint()
 			rectScores.bottom);
 
 		std::wstringstream score;
-		switch(m_Scores[x].m_Waarde)
-		{
-		case CZetBedenker::Sm_PlusMax:	score << "Winst"; break;
-		case CZetBedenker::Sm_MinMax:	score << "Verlies"; break;
-		default: score << m_Scores[x].m_Waarde;
-		}
+		int waarde = m_Scores[x].m_Waarde;
+		if     (waarde >= CZetBedenker::Sm_PlusMax) score << "Winst ("   << waarde - CZetBedenker::Sm_PlusMax << ")";
+		else if(waarde <= CZetBedenker::Sm_MinMax)  score << "Verlies (" << CZetBedenker::Sm_MinMax - waarde << ")";
+		else score << waarde;
+
+//		switch(m_Scores[x].m_Waarde) 
+//		{
+//		case CZetBedenker::Sm_PlusMax:	score << "Winst"; break;
+//		case CZetBedenker::Sm_MinMax:	score << "Verlies"; break;
+//		default: score << m_Scores[x].m_Waarde;
+//		}
 		
 		dc.DrawText(score.str().c_str(), rectVakje, DT_CENTER);
 	}

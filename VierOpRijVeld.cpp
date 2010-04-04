@@ -219,7 +219,13 @@ char CZetBedenker::SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte)
 	return SpeelWillekeurigSpel(veld, diepte - 1);	
 }
 
-const int zetVolgorde[] = {3, 2, 4, 1, 5, 0, 6};
+const int zetVolgorde[] = {3, 3, 3, 2, 4, 2, 4, 1, 5, 0, 6};
+//const int zetVolgorde[] = {3, 3, 3, 3, 2, 4, 2, 4, 2, 4, 1, 5, 1, 5, 0, 6};
+
+int PakVolgordePlek(int nummer)
+{
+	return zetVolgorde[nummer % (sizeof(zetVolgorde) / sizeof(int))];
+}
 
 int PakVolgordePlek(const int* volgorde, int plek)
 {
@@ -293,7 +299,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 	if(veld.Win() != 0)
 	{
 		++m_statWins;
-		return Sm_MinMax;   //Pff, vorige speler heeft al gewonnen. Lekker eerlijk.
+		return Sm_MinMax - zoekDiepte;   //Pff, vorige speler heeft al gewonnen. Lekker eerlijk. (Oja, het is nog erger als de diepte nog hoog is.)
 	}
 	if(	m_bAbort ||			//Stoppen maar. Gebruiker heeft geen geduld.
 		veld.m_Aantal >= VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte) //Veld zit vol. Heeft ook niet veel zin meer hè...
@@ -301,9 +307,18 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 	if( zoekDiepte == 0)  //Niet meer verder zoeken (anders duurt 't beetje lang hè)
 		return Evalueer(veld);//Eventueel evalueren...
 
+	bool plekGebruikt[VierOpRijVeld::Sm_Breedte];
+	memset(plekGebruikt, 0, sizeof(plekGebruikt));
 	int volgorde[VierOpRijVeld::Sm_Breedte];
-	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
-		volgorde[i] = PakVolgordePlek(zetVolgorde, i + veld.m_Aantal);
+	int j = 0;
+	for(int i = 0; j < VierOpRijVeld::Sm_Breedte; ++i)
+	{
+		int plek = PakVolgordePlek(i + veld.m_Aantal);
+		if(plekGebruikt[plek])
+			continue;
+		plekGebruikt[plek] = true;
+		volgorde[j++] = plek;
+	}
 //	memcpy(volgorde, zetVolgorde, sizeof(volgorde));
 //	if(zoekDiepte > 4)
 //		BepaalVolgorde(veld, volgorde);
