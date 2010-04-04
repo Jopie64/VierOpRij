@@ -12,7 +12,7 @@ IMPLEMENT_DYNAMIC(CVierOpRijViewWnd, CWnd)
 
 CVierOpRijViewWnd::CVierOpRijViewWnd()
 {
-
+	SetVeld(VierOpRijVeld());
 }
 
 CVierOpRijViewWnd::~CVierOpRijViewWnd()
@@ -102,7 +102,7 @@ void CVierOpRijViewWnd::OnPaint()
 			
 			rectVakje.DeflateRect(1,1);
 			COLORREF kleur = RGB(150, 150, 150);
-			switch(m_Veld.Wie(x, y))
+			switch(Veld().Wie(x, y))
 			{
 			case 1: kleur = RGB(255,0,0); break;
 			case 2: kleur = RGB(255,255,0); break;

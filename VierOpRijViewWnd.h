@@ -1,6 +1,7 @@
 #pragma once
 
 #include "VierOpRijVeld.h"
+#include <vector>
 // CVierOpRijViewWnd
 
 class CVierOpRijViewWnd : public CWnd
@@ -17,9 +18,10 @@ public:
 	afx_msg void OnPaint();
 
 public:
-	void				 SetVeld(const VierOpRijVeld& veld){m_Veld = veld; Invalidate(FALSE);}
-	void				 Pleur(int P_iPlek){m_Veld.Pleur(P_iPlek); Invalidate(FALSE);}
-	const VierOpRijVeld& Veld()const{return m_Veld;}
+	void				 SetVeld(const VierOpRijVeld& veld, bool leegHistorie = false){if(leegHistorie)m_Veld.clear(); m_Veld.push_back(veld); Invalidate(FALSE);}
+	void				 Pleur(int P_iPlek){VolgendeVeld().Pleur(P_iPlek); Invalidate(FALSE);}
+	bool				 Undo(){if(m_Veld.size() <= 1) return false; m_Veld.resize(m_Veld.size() - 1); Invalidate(FALSE); return true;}
+	const VierOpRijVeld& Veld()const{return m_Veld.back();}
 	void				 SetScore(int plek, int score){m_Scores[plek].Set(score); Invalidate(FALSE);}
 	void				 ResetScores(){for(int i=0; i<VierOpRijVeld::Sm_Breedte; ++i)m_Scores[i].m_bBekend = false; Invalidate(FALSE);}
 	void				 SetStats(const std::wstring& stats){/*if(m_Stats == stats)return;*/ m_Stats = stats; Invalidate(FALSE);}
@@ -35,9 +37,11 @@ private:
 		void Set(int waarde){m_bBekend = true; m_Waarde = waarde;}
 	};
 
-	VierOpRijVeld	m_Veld;
-	Score			m_Scores[VierOpRijVeld::Sm_Breedte];
-	std::wstring	m_Stats;
+	VierOpRijVeld&		VolgendeVeld(){m_Veld.push_back(m_Veld.back()); return m_Veld.back();}
+
+	std::vector<VierOpRijVeld>	m_Veld;
+	Score						m_Scores[VierOpRijVeld::Sm_Breedte];
+	std::wstring				m_Stats;
 public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };

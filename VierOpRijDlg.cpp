@@ -217,18 +217,22 @@ BOOL CVierOpRijDlg::PreTranslateMessage(MSG* pMsg)
 			switch(pMsg->wParam)
 			{
 			case 'r':
-				m_VierOpRijWnd.SetVeld(VierOpRijVeld());
+				m_VierOpRijWnd.SetVeld(VierOpRijVeld(), true);
+				return TRUE;
+			case 'u':
+				if(m_VierOpRijWnd.Undo())
+					return TRUE;
 				break;
 			case 'b':
 				Pleur(-1);
-				break;
+				return TRUE;
 			case 'o':
 				{
 					VierOpRijVeld veld = m_VierOpRijWnd.Veld();
 					veld.BeurtOverslaan();
 					m_VierOpRijWnd.SetVeld(veld);
 				}
-				break;
+				return TRUE;
 			default:
 				{
 					char plek = pMsg->wParam - '0';
