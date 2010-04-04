@@ -219,7 +219,7 @@ char CZetBedenker::SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte)
 	return SpeelWillekeurigSpel(veld, diepte - 1);	
 }
 
-const int zetVolgorde[] = {3, 3, 3, 2, 4, 2, 4, 1, 5, 0, 6};
+const int zetVolgorde[] = {3, 3, 3, 3, 2, 2, 4, 4, 1, 5, 0, 6};
 //const int zetVolgorde[] = {3, 3, 3, 3, 2, 4, 2, 4, 2, 4, 1, 5, 1, 5, 0, 6};
 
 int PakVolgordePlek(int nummer)
@@ -271,8 +271,13 @@ bool PlekScoreSort(const PlekScore& left, const PlekScore& right)
 	return right.score < left.score;
 }
 
-void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte])
+void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte)
 {
+	zoekDiepte -= 13; //4 niveaus minder doorzoeken.
+	if(zoekDiepte <= 0)
+		return; // Volgorde is niet boeiend.
+
+//	return;
 	PlekScore plekScore[VierOpRijVeld::Sm_Breedte];
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
@@ -283,7 +288,7 @@ void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[Vi
 		if(werkVeld.PleurUnchecked(plek) < 0)
 			plekScore[i].score = Sm_MinMax;
 		else
-			plekScore[i].score = BepaalScore(werkVeld, 0, Sm_MinMax, Sm_PlusMax, NULL);
+			plekScore[i].score = BepaalScore(werkVeld, zoekDiepte, Sm_MinMax, Sm_PlusMax, NULL);
 //		if(plekScore[i].score != 0)
 //			printf("hier");
 	}
@@ -319,9 +324,8 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 		plekGebruikt[plek] = true;
 		volgorde[j++] = plek;
 	}
-//	memcpy(volgorde, zetVolgorde, sizeof(volgorde));
-//	if(zoekDiepte > 4)
-//		BepaalVolgorde(veld, volgorde);
+
+//	BepaalVolgorde(veld, volgorde, zoekDiepte);
 
 	VierOpRijVeld veldMetZet(veld);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
@@ -333,7 +337,11 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 		++m_statPleurs;
 		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, NULL);
 		if(pZet == NULL)
-			alpha = __max(alpha, zetScore);
+		{
+			if(zetScore > alpha)
+				alpha = zetScore;
+		}
+//			alpha = __max(alpha, zetScore);
 		else
 		{
 			ScoreBepaald(plek, zetScore);
