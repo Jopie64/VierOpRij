@@ -2,6 +2,8 @@
 #include "VierOpRijVeld.h"
 #include <algorithm>
 
+CVierOpRijWeegschaal G_Weegschaal;
+
 VierOpRijVeld::VierOpRijVeld(void)
 :	m_Beurt(1),
 	m_Win(0),
@@ -152,6 +154,34 @@ char VierOpRijVeld::Win(int xHint, int yHint)
 		return beurt;
 
 	return 0; //Niemand gewonnen
+}
+
+void CVierOpRijWeegschaal::BepaalWeegschaal()
+{
+	for(int x = 0; x < Sm_Breedte; ++x)
+		for(int y = 0; y < Sm_Hoogte; ++y)
+		{
+			// _ en /
+			if(x <= Sm_Breedte - 4)
+			{
+				for(int i = 0; i < 4; ++i)
+					++m_Veld[x + i][y];
+				// /
+				if(y <= Sm_Hoogte - 4)
+					for(int i = 0; i < 4; ++i)
+						++m_Veld[x + i][y + i];
+			}
+
+			// | en \ dus
+			if(y <= Sm_Hoogte - 4)
+			{
+				for(int i = 0; i < 4; ++i)
+					++m_Veld[x][y + i];
+				if(x >= 3)
+					for(int i = 0; i < 4; ++i)
+						++m_Veld[x - i][y + i];
+			}
+		}
 }
 
 

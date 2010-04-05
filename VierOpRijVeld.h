@@ -18,7 +18,7 @@ public:
 	inline bool Vol()const{return m_Aantal == Sm_Breedte * Sm_Hoogte;}
 	void		BeurtOverslaan(){VolgendeBeurt();}
 
-private:
+protected:
 	int PleurUnchecked(int plek);
 	inline void PlaatsUnchecked(int speler, int x, int y);
 	inline char WieUnchecked(int x, int y)const{return m_Veld[x][y];}
@@ -31,6 +31,15 @@ private:
 	int  m_Aantal;
 
 	friend class CZetBedenker;
+
+};
+
+class CVierOpRijWeegschaal : public VierOpRijVeld
+{
+public:
+	CVierOpRijWeegschaal(){BepaalWeegschaal();}
+
+	void BepaalWeegschaal();
 
 };
 
