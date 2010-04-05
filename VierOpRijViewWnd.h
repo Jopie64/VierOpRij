@@ -18,7 +18,7 @@ public:
 	afx_msg void OnPaint();
 
 public:
-	void				 SetVeld(const VierOpRijVeld& veld, bool leegHistorie = false){if(leegHistorie)m_Veld.clear(); m_Veld.push_back(veld); Invalidate(FALSE);}
+	void				 SetVeld(const VierOpRijVeld& veld, bool leegHistorie = false){if(leegHistorie)m_Veld.clear(); m_Veld.push_back(veld); if(m_hWnd != NULL)Invalidate(FALSE);}
 	void				 Pleur(int P_iPlek){VolgendeVeld().Pleur(P_iPlek); Invalidate(FALSE);}
 	bool				 Undo(){if(m_Veld.size() <= 1) return false; m_Veld.resize(m_Veld.size() - 1); Invalidate(FALSE); return true;}
 	const VierOpRijVeld& Veld()const{return m_Veld.back();}

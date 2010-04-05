@@ -5,6 +5,7 @@ class VierOpRijVeld
 public:
 	static const int Sm_Breedte = 7;
 	static const int Sm_Hoogte = 6;
+	static const int Sm_Spelers = 2;
 
 	VierOpRijVeld(void);
 	~VierOpRijVeld(void);
@@ -12,6 +13,8 @@ public:
 	void Pleur(int plek);
 	char Win()const;
 	char Wie(int x, int y)const;
+	int	 Waarde(char speler)const;
+	int  Waarde()const{return Waarde(m_Beurt);}
 
 	inline char Beurt()const{return m_Beurt;}
 
@@ -29,20 +32,11 @@ protected:
 	char m_Beurt;
 	char m_Win;
 	int  m_Aantal;
+	int	 m_SpelerWeegschaal[Sm_Spelers];
 
 	friend class CZetBedenker;
 
 };
-
-class CVierOpRijWeegschaal : public VierOpRijVeld
-{
-public:
-	CVierOpRijWeegschaal(){BepaalWeegschaal();}
-
-	void BepaalWeegschaal();
-
-};
-
 
 class CZetBedenker
 {
@@ -62,7 +56,7 @@ public:
 	virtual void ScoreBepaald(int plek, int score){}
 
 private:
-	char SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte);
+//	char SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte);
 	int Evalueer(const VierOpRijVeld& veld);
 	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
 	void BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte);

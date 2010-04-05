@@ -2,6 +2,16 @@
 #include "VierOpRijVeld.h"
 #include <algorithm>
 
+
+class CVierOpRijWeegschaal : public VierOpRijVeld
+{
+public:
+	CVierOpRijWeegschaal(){BepaalWeegschaal();}
+
+	void BepaalWeegschaal();
+
+};
+
 CVierOpRijWeegschaal G_Weegschaal;
 
 VierOpRijVeld::VierOpRijVeld(void)
@@ -10,6 +20,7 @@ VierOpRijVeld::VierOpRijVeld(void)
 	m_Aantal(0)
 {
 	memset(m_Veld,0,sizeof(m_Veld));
+	memset(m_SpelerWeegschaal, 0, sizeof(m_SpelerWeegschaal));
 }
 
 VierOpRijVeld::~VierOpRijVeld(void)
@@ -20,7 +31,7 @@ char VierOpRijVeld::VolgendeBeurt()
 {
 	char huidigeBeurt = m_Beurt;
 	++m_Beurt;
-	if(m_Beurt > 2)
+	if(m_Beurt > Sm_Spelers)
 		m_Beurt = 1;
 	return huidigeBeurt;
 }
@@ -57,6 +68,7 @@ void VierOpRijVeld::PlaatsUnchecked(int speler, int x, int y)
 {
 	m_Veld[x][y] = speler;
 	++m_Aantal;
+	m_SpelerWeegschaal[speler - 1] += G_Weegschaal.m_Veld[x][y];
 	m_Win = Win(x, y);
 }
 
@@ -156,6 +168,19 @@ char VierOpRijVeld::Win(int xHint, int yHint)
 	return 0; //Niemand gewonnen
 }
 
+int VierOpRijVeld::Waarde(char speler)const
+{
+	--speler; //speler is altijd 1 of 2. Moet hier 0 of 1 zijn.
+	int waarde = 0;
+	for(int i=0; i<Sm_Spelers; ++i)
+		if(speler == i)
+			waarde += m_SpelerWeegschaal[i];
+		else
+			waarde -= m_SpelerWeegschaal[i];
+	return waarde;
+}
+
+
 void CVierOpRijWeegschaal::BepaalWeegschaal()
 {
 	for(int x = 0; x < Sm_Breedte; ++x)
@@ -222,6 +247,8 @@ int CZetBedenker::Evalueer(const VierOpRijVeld& veld, int diepte, bool eerste)
 	return waarde;
 }
 */
+
+/* //Willekeurig spel
 int CZetBedenker::Evalueer(const VierOpRijVeld& veld)
 {
 	++m_statEvals;
@@ -247,6 +274,15 @@ char CZetBedenker::SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte)
 		return 0;
 	veld.PleurUnchecked(rand() % 7);
 	return SpeelWillekeurigSpel(veld, diepte - 1);	
+}
+
+*/
+
+// Weegschaal
+int CZetBedenker::Evalueer(const VierOpRijVeld& veld)
+{
+	++m_statEvals;
+	return veld.Waarde();
 }
 
 const int zetVolgorde[] = {3, 3, 3, 3, 2, 2, 4, 4, 1, 5, 0, 6};
@@ -303,7 +339,7 @@ bool PlekScoreSort(const PlekScore& left, const PlekScore& right)
 
 void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte)
 {
-	zoekDiepte -= 13; //4 niveaus minder doorzoeken.
+	zoekDiepte -= 2; //4 niveaus minder doorzoeken.
 	if(zoekDiepte <= 0)
 		return; // Volgorde is niet boeiend.
 
@@ -318,7 +354,8 @@ void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[Vi
 		if(werkVeld.PleurUnchecked(plek) < 0)
 			plekScore[i].score = Sm_MinMax;
 		else
-			plekScore[i].score = BepaalScore(werkVeld, zoekDiepte, Sm_MinMax, Sm_PlusMax, NULL);
+//			plekScore[i].score = BepaalScore(werkVeld, zoekDiepte, Sm_MinMax, Sm_PlusMax, NULL);
+			plekScore[i].score = -werkVeld.Waarde();
 //		if(plekScore[i].score != 0)
 //			printf("hier");
 	}
@@ -355,7 +392,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 		volgorde[j++] = plek;
 	}
 
-//	BepaalVolgorde(veld, volgorde, zoekDiepte);
+	//BepaalVolgorde(veld, volgorde, zoekDiepte);
 
 	VierOpRijVeld veldMetZet(veld);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
