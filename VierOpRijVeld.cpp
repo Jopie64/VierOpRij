@@ -371,7 +371,8 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 	if(veld.Win() != 0)
 	{
 		++m_statWins;
-		return Sm_MinMax - zoekDiepte;   //Pff, vorige speler heeft al gewonnen. Lekker eerlijk. (Oja, het is nog erger als de diepte nog hoog is.)
+//		return Sm_MinMax - zoekDiepte;   //Pff, vorige speler heeft al gewonnen. Lekker eerlijk. (Oja, het is nog erger als de diepte nog hoog is.)
+		return Sm_MinMax;
 	}
 	if(	m_bAbort ||			//Stoppen maar. Gebruiker heeft geen geduld.
 		veld.m_Aantal >= VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte) //Veld zit vol. Heeft ook niet veel zin meer hè...
@@ -432,7 +433,7 @@ int CZetBedenker::BedenkZet(int zoekDiepte)
 {
 	m_bWinst = false;
 	if(zoekDiepte < 0)
-		zoekDiepte = max(16, m_Veld.m_Aantal);
+		zoekDiepte = max(14, m_Veld.m_Aantal);
 	m_ZoekDiepte = zoekDiepte;
 	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, &m_Zet);
 	return m_Zet;
