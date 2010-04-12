@@ -29,6 +29,7 @@ protected:
 	char Win(int xHint, int yHint);
 
 	char m_Veld[Sm_Breedte][Sm_Hoogte];
+	char m_Hoogte[Sm_Breedte];
 	char m_Beurt;
 	char m_Win;
 	int  m_Aantal;
@@ -46,7 +47,7 @@ public:
 
 	CZetBedenker(const VierOpRijVeld& veld)
 	:	m_Veld(veld),m_Zet(-1),m_bAbort(false),m_bWinst(false),
-		m_statEvals(0),m_statPleurs(0), m_statWins(0), m_ZoekDiepte(0){}
+		m_statEvals(0),m_statPleurs(0), m_statWins(0), m_ZoekDiepte(0),m_Timestamp_Begin(CTime::GetCurrentTime()){}
 	int BedenkZet(int zoekDiepte);
 
 	int  Zet()const{return m_Zet;}
@@ -67,6 +68,7 @@ private:
 	bool			m_bAbort;
 
 public:
+	CTime			m_Timestamp_Begin;
 	int				m_statEvals;
 	int				m_statPleurs;
 	int				m_statWins;

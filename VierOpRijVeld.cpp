@@ -20,6 +20,7 @@ VierOpRijVeld::VierOpRijVeld(void)
 	m_Aantal(0)
 {
 	memset(m_Veld,0,sizeof(m_Veld));
+	memset(m_Hoogte,0,sizeof(m_Hoogte));
 	memset(m_SpelerWeegschaal, 0, sizeof(m_SpelerWeegschaal));
 }
 
@@ -54,14 +55,12 @@ char VierOpRijVeld::Wie(int x, int y) const
 
 int VierOpRijVeld::PleurUnchecked(int plek)
 {
-	for(int i=0; i<Sm_Hoogte; ++i)
-		if(m_Veld[plek][i] == 0)
-		{
-			PlaatsUnchecked(VolgendeBeurt(), plek, i);
-			return i;
-		}
-	return -1;
-
+	char& hoogte = m_Hoogte[plek];
+	if(hoogte >= Sm_Hoogte)
+		return -1;
+	
+	PlaatsUnchecked(VolgendeBeurt(), plek, hoogte);
+	return hoogte++;
 }
 
 void VierOpRijVeld::PlaatsUnchecked(int speler, int x, int y)
