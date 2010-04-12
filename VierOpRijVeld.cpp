@@ -60,6 +60,8 @@ int VierOpRijVeld::PleurUnchecked(int plek)
 		return -1;
 	
 	PlaatsUnchecked(VolgendeBeurt(), plek, hoogte);
+//	PlaatsUnchecked(m_Beurt, plek, hoogte);
+//	m_Beurt ^= 0x3;
 	return hoogte++;
 }
 
@@ -78,14 +80,34 @@ char VierOpRijVeld::Win() const
 
 char VierOpRijVeld::Win(int xHint, int yHint)
 {
-	char beurt = m_Veld[xHint][yHint];
+	char* kolomX = m_Veld[xHint];
+	char beurt = kolomX[yHint];
 //	int linker = __min(xHint - 3, 0);
 //	int beneden = 
-	int gelijk = 1;
+	int gelijk;
 	int x;
 	int y;
 	
+	//Verticaal
+	gelijk = 1;
+	y = yHint - 1;
+	while(y >= 0 && gelijk < 4 && kolomX[y] == beurt)
+	{
+		--y;
+		++gelijk;
+	}
+	
+	y = yHint + 1;
+	while(y < Sm_Hoogte && gelijk < 4 && kolomX[y] == beurt)
+	{
+		++y;
+		++gelijk;
+	}
+	if(gelijk >= 4)
+		return beurt;
+
 	//Horizontaal
+	gelijk = 1;
 	x = xHint - 1;
 	while(x >= 0 && gelijk < 4 && m_Veld[x][yHint] == beurt)
 	{
@@ -97,24 +119,6 @@ char VierOpRijVeld::Win(int xHint, int yHint)
 	while(x < Sm_Breedte && gelijk < 4 && m_Veld[x][yHint] == beurt)
 	{
 		++x;
-		++gelijk;
-	}
-	if(gelijk >= 4)
-		return beurt;
-
-	//Verticaal
-	gelijk = 1;
-	y = yHint - 1;
-	while(y >= 0 && gelijk < 4 && m_Veld[xHint][y] == beurt)
-	{
-		--y;
-		++gelijk;
-	}
-	
-	y = yHint + 1;
-	while(y < Sm_Hoogte && gelijk < 4 && m_Veld[xHint][y] == beurt)
-	{
-		++y;
 		++gelijk;
 	}
 	if(gelijk >= 4)

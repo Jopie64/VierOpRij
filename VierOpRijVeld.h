@@ -25,7 +25,7 @@ protected:
 	int PleurUnchecked(int plek);
 	inline void PlaatsUnchecked(int speler, int x, int y);
 	inline char WieUnchecked(int x, int y)const{return m_Veld[x][y];}
-	char VolgendeBeurt();
+	inline char VolgendeBeurt();
 	char Win(int xHint, int yHint);
 
 	char m_Veld[Sm_Breedte][Sm_Hoogte];
