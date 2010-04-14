@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "VierOpRijVeld.h"
 #include <algorithm>
-
+#include <vector>
 
 class CVierOpRijWeegschaal : public VierOpRijVeld
 {
@@ -398,14 +398,34 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 
 	//BepaalVolgorde(veld, volgorde, zoekDiepte);
 
-	VierOpRijVeld veldMetZet(veld);
-	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
+	std::vector<VierOpRijVeld> veldenMetZet(VierOpRijVeld::Sm_Breedte, veld);
+	//for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
+	int tel = 0;
+	int tel2 = 0;
+	for(std::vector<VierOpRijVeld>::iterator i = veldenMetZet.begin(); i != veldenMetZet.end();)
 	{
-		int plek = PakVolgordePlek(volgorde, i);
+		VierOpRijVeld& veldMetZet = *i;
+		int plek = PakVolgordePlek(volgorde, tel++);
 //		int plek = PakVolgordePlek(zetVolgorde, i + veld.m_Aantal);
 		if(veldMetZet.PleurUnchecked(plek) < 0)
+		{
+			i = veldenMetZet.erase(i);
 			continue;//Kan niet hier...
+		}
 		++m_statPleurs;
+		if(veldMetZet.Win() != 0)
+		{
+			++m_statWins;
+			return Sm_PlusMax;
+		}
+		volgorde[tel2++] = plek;//Volgorde wordt opnieuw bepaald, zonder de plekken waar geen steen kan
+		++i;
+	}
+
+	tel = 0;
+	for(std::vector<VierOpRijVeld>::iterator i = veldenMetZet.begin(); i != veldenMetZet.end(); ++i)
+	{
+		VierOpRijVeld& veldMetZet = *i;
 		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, NULL);
 		if(pZet == NULL)
 		{
@@ -415,6 +435,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 //			alpha = __max(alpha, zetScore);
 		else
 		{
+			int plek = volgorde[tel++];
 			ScoreBepaald(plek, zetScore);
 			if(zetScore > alpha)
 			{
@@ -427,7 +448,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 
 		if(beta <= alpha)
 			break; //Jay! Beta cutoff. Scheelt weer wat tijd.
-		veldMetZet = veld; //Weer even terug... (Hmm gebeurt vaak.. Misschien iets als undo maken ofzo)
+//		veldMetZet = veld; //Weer even terug... (Hmm gebeurt vaak.. Misschien iets als undo maken ofzo)
 	}
 	return alpha;
 }

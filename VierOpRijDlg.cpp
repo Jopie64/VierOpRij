@@ -198,9 +198,9 @@ void CVierOpRijDlg::Pleur(int plek)
 		if(plek < 0)
 			StartBedenker();
 	}
-	catch(std::exception&)
+	catch(std::exception& e)
 	{
-		AfxMessageBox(L"Hee joh, dat kan helemaal niet!");
+		AfxMessageBox(L"Hee joh, dat kan helemaal niet!\n" + CString(e.what()));
 	}
 }
 
