@@ -37,6 +37,12 @@ char VierOpRijVeld::VolgendeBeurt()
 	return huidigeBeurt;
 }
 
+char VierOpRijVeld::VorigeBeurt()
+{
+	//Let op, werkt alleen bij 2 spelers!
+	return VolgendeBeurt();
+}
+
 void VierOpRijVeld::Pleur(int plek)
 {
 	if(plek < 0 || plek >= Sm_Breedte)
@@ -65,8 +71,29 @@ int VierOpRijVeld::PleurUnchecked(int plek)
 	return hoogte++;
 }
 
+int VierOpRijVeld::UnpleurUnchecked(int plek)
+{
+	char& hoogte = m_Hoogte[plek];
+	if(hoogte <= 0)
+		return -1;
+	
+	VorigeBeurt();
+	PlaatsUnchecked(0, plek, --hoogte);
+//	PlaatsUnchecked(m_Beurt, plek, hoogte);
+//	m_Beurt ^= 0x3;
+	return hoogte;
+}
+
 void VierOpRijVeld::PlaatsUnchecked(int speler, int x, int y)
 {
+	if(speler == 0) 
+	{
+		m_SpelerWeegschaal[m_Veld[x][y] - 1] -= G_Weegschaal.m_Veld[x][y];
+		m_Veld[x][y] = 0;
+		--m_Aantal;
+		m_Win = 0;
+		return;
+	}
 	m_Veld[x][y] = speler;
 	++m_Aantal;
 	m_SpelerWeegschaal[speler - 1] += G_Weegschaal.m_Veld[x][y];
@@ -369,7 +396,7 @@ void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[Vi
 
 }
 
-int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
+int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
 {
 	if(veld.Win() != 0)
 	{
@@ -398,15 +425,17 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 
 	//BepaalVolgorde(veld, volgorde, zoekDiepte);
 
-	VierOpRijVeld veldMetZet(veld);
+	//VierOpRijVeld veldMetZet(veld);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
 		int plek = PakVolgordePlek(volgorde, i);
 //		int plek = PakVolgordePlek(zetVolgorde, i + veld.m_Aantal);
-		if(veldMetZet.PleurUnchecked(plek) < 0)
+		if(veld.PleurUnchecked(plek) < 0)
 			continue;//Kan niet hier...
 		++m_statPleurs;
-		int zetScore = -BepaalScore(veldMetZet, zoekDiepte - 1, -beta, -alpha, NULL);
+		int zetScore = -BepaalScore(veld, zoekDiepte - 1, -beta, -alpha, NULL);
+		veld.UnpleurUnchecked(plek);//Zet weer ongedaan maken...
+
 		if(pZet == NULL)
 		{
 			if(zetScore > alpha)
@@ -427,7 +456,7 @@ int CZetBedenker::BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alp
 
 		if(beta <= alpha)
 			break; //Jay! Beta cutoff. Scheelt weer wat tijd.
-		veldMetZet = veld; //Weer even terug... (Hmm gebeurt vaak.. Misschien iets als undo maken ofzo)
+		//veldMetZet = veld; //Weer even terug... (Hmm gebeurt vaak.. Misschien iets als undo maken ofzo)
 	}
 	return alpha;
 }

@@ -23,9 +23,11 @@ public:
 
 protected:
 	int PleurUnchecked(int plek);
+	int UnpleurUnchecked(int plek);
 	inline void PlaatsUnchecked(int speler, int x, int y);
 	inline char WieUnchecked(int x, int y)const{return m_Veld[x][y];}
 	inline char VolgendeBeurt();
+	inline char VorigeBeurt();
 	char Win(int xHint, int yHint);
 
 	char m_Veld[Sm_Breedte][Sm_Hoogte];
@@ -59,7 +61,7 @@ public:
 private:
 //	char SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte);
 	int Evalueer(const VierOpRijVeld& veld);
-	int BepaalScore(const VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
+	int BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
 	void BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte);
 
 	VierOpRijVeld	m_Veld;
