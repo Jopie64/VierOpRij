@@ -418,6 +418,8 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		if(win)
 		{
 			++m_statWins;
+			if(pZet != NULL)
+				*pZet = i;
 			return Sm_PlusMax; //Ik ga winne!!
 		}
 	}
