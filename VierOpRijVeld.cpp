@@ -79,7 +79,6 @@ int VierOpRijVeld::UnpleurUnchecked(int plek)
 	
 	VorigeBeurt();
 	PlaatsUnchecked(0, plek, --hoogte);
-//	PlaatsUnchecked(m_Beurt, plek, hoogte);
 //	m_Beurt ^= 0x3;
 	return hoogte;
 }
@@ -88,6 +87,7 @@ void VierOpRijVeld::PlaatsUnchecked(int speler, int x, int y)
 {
 	if(speler == 0) 
 	{
+		//Unplaats
 		m_SpelerWeegschaal[m_Veld[x][y] - 1] -= G_Weegschaal.m_Veld[x][y];
 		m_Veld[x][y] = 0;
 		--m_Aantal;
@@ -407,6 +407,21 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 	if(	m_bAbort ||			//Stoppen maar. Gebruiker heeft geen geduld.
 		veld.m_Aantal >= VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte) //Veld zit vol. Heeft ook niet veel zin meer hè...
 		return 0;
+
+	//ff kijke of ik in deze situatie kan winne, zonder eerst dieper te zoeken.
+	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
+	{
+		if(veld.PleurUnchecked(i) < 0)
+			continue;
+		bool win = veld.Win() != 0;
+		veld.UnpleurUnchecked(i);
+		if(win)
+		{
+			++m_statWins;
+			return Sm_PlusMax; //Ik ga winne!!
+		}
+	}
+
 	if( zoekDiepte == 0)  //Niet meer verder zoeken (anders duurt 't beetje lang hè)
 		return Evalueer(veld);//Eventueel evalueren...
 
@@ -429,7 +444,6 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
 		int plek = PakVolgordePlek(volgorde, i);
-//		int plek = PakVolgordePlek(zetVolgorde, i + veld.m_Aantal);
 		if(veld.PleurUnchecked(plek) < 0)
 			continue;//Kan niet hier...
 		++m_statPleurs;
@@ -456,7 +470,6 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 
 		if(beta <= alpha)
 			break; //Jay! Beta cutoff. Scheelt weer wat tijd.
-		//veldMetZet = veld; //Weer even terug... (Hmm gebeurt vaak.. Misschien iets als undo maken ofzo)
 	}
 	return alpha;
 }
