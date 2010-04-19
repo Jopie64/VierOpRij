@@ -443,6 +443,7 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 	//BepaalVolgorde(veld, volgorde, zoekDiepte);
 
 	//VierOpRijVeld veldMetZet(veld);
+	int grootste = Sm_MinMax;
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
 		int plek = PakVolgordePlek(volgorde, i);
@@ -452,6 +453,8 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		int zetScore = -BepaalScore(veld, zoekDiepte - 1, -beta, -alpha, NULL);
 		veld.UnpleurUnchecked(plek);//Zet weer ongedaan maken...
 
+		if(zetScore > grootste)
+			grootste = zetScore;
 		if(pZet == NULL)
 		{
 			if(zetScore > alpha)
@@ -473,7 +476,7 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		if(beta <= alpha)
 			break; //Jay! Beta cutoff. Scheelt weer wat tijd.
 	}
-	return alpha;
+	return grootste;
 }
 
 int CZetBedenker::BedenkZet(int zoekDiepte)
