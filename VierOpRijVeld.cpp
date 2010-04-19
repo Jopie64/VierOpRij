@@ -370,7 +370,7 @@ bool PlekScoreSort(const PlekScore& left, const PlekScore& right)
 void CZetBedenker::BepaalVolgorde(VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte)
 {
 	//return;
-	zoekDiepte -= 12; //4 niveaus minder doorzoeken.
+	zoekDiepte -= 8; //4 niveaus minder doorzoeken.
 	if(zoekDiepte <= 0)
 		return; // Volgorde is niet boeiend.
 
@@ -384,7 +384,7 @@ void CZetBedenker::BepaalVolgorde(VierOpRijVeld& veld, int (& volgorde)[VierOpRi
 			plekScore[i].score = Sm_MinMax;
 			continue;
 		}
-		plekScore[i].score = -Minimax(veld,4);
+		plekScore[i].score = -Minimax(veld,__min(zoekDiepte+1, 3));
 		veld.UnpleurUnchecked(plek);
 	}
 
