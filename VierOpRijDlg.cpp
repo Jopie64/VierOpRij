@@ -6,6 +6,7 @@
 #include "VierOpRij.h"
 #include "VierOpRijDlg.h"
 #include <sstream>
+#include <iomanip>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -55,7 +56,7 @@ BOOL CVierOpRijDlg::OnInitDialog()
 	m_VierOpRijWnd.Create(NULL, NULL, WS_VISIBLE | WS_CHILD, rectClient, this, 0xFF);
 
 	SetDlgItemText(IDC_EDIT_LEVEL, L"-1");
-	SetTimer(0, 500, NULL);
+	SetTimer(0, 100, NULL);
 
 	RelocateControls();
 
@@ -154,7 +155,10 @@ void CVierOpRijDlg::StatsBijwerken()
 		for(CZetBedenker::DiepteProgressLijst::reverse_iterator i = m_BezigeBedenkerPtr->m_DiepteProgressLijst.rbegin(); i != m_BezigeBedenkerPtr->m_DiepteProgressLijst.rend(); ++i)
 		{
 			stats
-				<< tel++ << " " << i->volgorde << " " << i->plek << std::endl;		
+				<< std::setw(2) << tel++ << " " << i->volgorde << " " << i->plek;
+			if(i->beste >= 0)
+				stats << " b:" << i->beste;
+			stats << std::endl;		
 		}
 		m_VierOpRijWnd.SetProgress(stats.str());
 	}

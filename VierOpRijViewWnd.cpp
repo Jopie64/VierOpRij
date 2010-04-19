@@ -55,7 +55,7 @@ void CVierOpRijViewWnd::OnPaint()
 	// **** Progress
 	
 	CRect rectProgress = rectClient;
-	rectProgress.right = rectProgress.left + 60;
+	rectProgress.right = rectProgress.left + 80;
 	rectClient.left    = rectProgress.right + 1;
 
 	dc.Rectangle(rectProgress);

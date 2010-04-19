@@ -427,6 +427,8 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 	if( zoekDiepte == 0)  //Niet meer verder zoeken (anders duurt 't beetje lang hè)
 		return Evalueer(veld);//Eventueel evalueren...
 
+	DiepteProgress& diepteProgress  = m_DiepteProgressLijst[zoekDiepte - 1];
+	diepteProgress.beste = -1;
 	bool plekGebruikt[VierOpRijVeld::Sm_Breedte];
 	memset(plekGebruikt, 0, sizeof(plekGebruikt));
 	int volgorde[VierOpRijVeld::Sm_Breedte];
@@ -448,7 +450,6 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		int plek = PakVolgordePlek(volgorde, i);
 		if(veld.PleurUnchecked(plek) < 0)
 			continue;//Kan niet hier...
-		DiepteProgress& diepteProgress  = m_DiepteProgressLijst[zoekDiepte - 1];
 		diepteProgress.volgorde			= i;
 		diepteProgress.plek				= plek;
 
@@ -459,7 +460,10 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		if(pZet == NULL)
 		{
 			if(zetScore > alpha)
+			{
 				alpha = zetScore;
+				diepteProgress.beste = plek;
+			}
 		}
 //			alpha = __max(alpha, zetScore);
 		else
@@ -467,6 +471,7 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 			ScoreBepaald(plek, zetScore);
 			if(zetScore > alpha)
 			{
+				diepteProgress.beste = plek;
 				alpha = zetScore;
 				*pZet = plek;
 			}
