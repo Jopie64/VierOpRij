@@ -47,8 +47,22 @@ void CVierOpRijViewWnd::OnPaint()
 	CRect rectStats  = rectClient;
 	rectStats.bottom = rectClient.top + 20;
 	rectClient.top   = rectStats.bottom + 1;
-	rectStats.left  += 2;
+	dc.Rectangle(rectStats);
+	rectStats.DeflateRect(2,2);
+	//rectStats.left  += 2;
 	dc.DrawText(m_Stats.c_str(), rectStats, DT_LEFT);
+
+	// **** Progress
+	
+	CRect rectProgress = rectClient;
+	rectProgress.right = rectProgress.left + 60;
+	rectClient.left    = rectProgress.right + 1;
+
+	dc.Rectangle(rectProgress);
+	rectProgress.DeflateRect(2,2);
+	dc.DrawText(m_Progress.c_str(), rectProgress, DT_TOP | DT_LEFT);
+
+
 
 
 	// **** Scores

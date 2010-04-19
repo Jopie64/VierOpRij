@@ -448,6 +448,10 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		int plek = PakVolgordePlek(volgorde, i);
 		if(veld.PleurUnchecked(plek) < 0)
 			continue;//Kan niet hier...
+		DiepteProgress& diepteProgress  = m_DiepteProgressLijst[zoekDiepte - 1];
+		diepteProgress.volgorde			= i;
+		diepteProgress.plek				= plek;
+
 		++m_statPleurs;
 		int zetScore = -BepaalScore(veld, zoekDiepte - 1, -beta, -alpha, NULL);
 		veld.UnpleurUnchecked(plek);//Zet weer ongedaan maken...
@@ -482,6 +486,8 @@ int CZetBedenker::BedenkZet(int zoekDiepte)
 	if(zoekDiepte < 0)
 		zoekDiepte = max(14, m_Veld.m_Aantal);
 	m_ZoekDiepte = zoekDiepte;
+
+	m_DiepteProgressLijst.resize(m_ZoekDiepte);
 	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, &m_Zet);
 	return m_Zet;
 }

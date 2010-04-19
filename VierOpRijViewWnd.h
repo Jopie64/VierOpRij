@@ -25,6 +25,7 @@ public:
 	void				 SetScore(int plek, int score){m_Scores[plek].Set(score); Invalidate(FALSE);}
 	void				 ResetScores(){for(int i=0; i<VierOpRijVeld::Sm_Breedte; ++i)m_Scores[i].m_bBekend = false; Invalidate(FALSE);}
 	void				 SetStats(const std::wstring& stats){/*if(m_Stats == stats)return;*/ m_Stats = stats; Invalidate(FALSE);}
+	void				 SetProgress(const std::wstring& progress){/*if(m_Stats == stats)return;*/ m_Progress = progress; Invalidate(FALSE);}
 
 private:
 	class Score
@@ -42,6 +43,7 @@ private:
 	std::vector<VierOpRijVeld>	m_Veld;
 	Score						m_Scores[VierOpRijVeld::Sm_Breedte];
 	std::wstring				m_Stats;
+	std::wstring				m_Progress;
 public:
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };

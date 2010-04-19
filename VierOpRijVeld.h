@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 class VierOpRijVeld
 {
 public:
@@ -44,6 +46,15 @@ protected:
 class CZetBedenker
 {
 public:
+	class DiepteProgress
+	{
+	public:
+		DiepteProgress():volgorde(0), plek(0){}
+		int volgorde;
+		int plek;
+	};
+	typedef std::vector<DiepteProgress> DiepteProgressLijst;
+
 	static const int Sm_PlusMax = 1000000000;
 	static const int Sm_MinMax  = -Sm_PlusMax;
 
@@ -69,10 +80,12 @@ private:
 	bool			m_bWinst;
 	bool			m_bAbort;
 
+
 public:
-	CTime			m_Timestamp_Begin;
-	int				m_statEvals;
-	int				m_statPleurs;
-	int				m_statWins;
-	int				m_ZoekDiepte;
+	CTime				m_Timestamp_Begin;
+	DiepteProgressLijst m_DiepteProgressLijst;
+	int					m_statEvals;
+	int					m_statPleurs;
+	int					m_statWins;
+	int					m_ZoekDiepte;
 };

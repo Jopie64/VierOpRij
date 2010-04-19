@@ -137,14 +137,28 @@ void CVierOpRijDlg::StatsBijwerken()
 {
 	if(m_BezigeBedenkerPtr == NULL)
 		return; //Niet deze bedenker meer...
-	std::wstringstream stats;
-	stats 
-		<< "Diepte: " << m_BezigeBedenkerPtr->m_ZoekDiepte
-		<< "  Evals: " << m_BezigeBedenkerPtr->m_statEvals
-		<< "  Pleurs: " << m_BezigeBedenkerPtr->m_statPleurs
-		<< "  Wins: " << m_BezigeBedenkerPtr->m_statWins
-		<< "  Tijd: " << (CTime::GetCurrentTime() - m_BezigeBedenkerPtr->m_Timestamp_Begin).GetTotalSeconds();
-	m_VierOpRijWnd.SetStats(stats.str());
+	{
+		std::wstringstream stats;
+		stats 
+			<< "Diepte: " << m_BezigeBedenkerPtr->m_ZoekDiepte
+			<< "  Evals: " << m_BezigeBedenkerPtr->m_statEvals
+			<< "  Pleurs: " << m_BezigeBedenkerPtr->m_statPleurs
+			<< "  Wins: " << m_BezigeBedenkerPtr->m_statWins
+			<< "  Tijd: " << (CTime::GetCurrentTime() - m_BezigeBedenkerPtr->m_Timestamp_Begin).GetTotalSeconds();
+		m_VierOpRijWnd.SetStats(stats.str());
+	}
+
+	{
+		std::wstringstream stats;
+		int tel = 0;
+		for(CZetBedenker::DiepteProgressLijst::reverse_iterator i = m_BezigeBedenkerPtr->m_DiepteProgressLijst.rbegin(); i != m_BezigeBedenkerPtr->m_DiepteProgressLijst.rend(); ++i)
+		{
+			stats
+				<< tel++ << " " << i->volgorde << " " << i->plek << std::endl;		
+		}
+		m_VierOpRijWnd.SetProgress(stats.str());
+	}
+
 }
 
 
