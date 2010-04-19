@@ -74,8 +74,9 @@ public:
 private:
 //	char SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte);
 	int Evalueer(const VierOpRijVeld& veld);
+	int Minimax(VierOpRijVeld& veld, int zoekDiepte);
 	int BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet);
-	void BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte);
+	void BepaalVolgorde(VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte);
 
 	VierOpRijVeld	m_Veld;
 	int				m_Zet;

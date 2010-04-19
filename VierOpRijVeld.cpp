@@ -367,33 +367,49 @@ bool PlekScoreSort(const PlekScore& left, const PlekScore& right)
 	return right.score < left.score;
 }
 
-void CZetBedenker::BepaalVolgorde(const VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte)
+void CZetBedenker::BepaalVolgorde(VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte)
 {
-	zoekDiepte -= 2; //4 niveaus minder doorzoeken.
+	//return;
+	zoekDiepte -= 12; //4 niveaus minder doorzoeken.
 	if(zoekDiepte <= 0)
 		return; // Volgorde is niet boeiend.
 
-//	return;
 	PlekScore plekScore[VierOpRijVeld::Sm_Breedte];
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
 		int plek = PakVolgordePlek(volgorde, i);
-//		int plek = i;
 		plekScore[i].plek = plek;
-		VierOpRijVeld werkVeld(veld);
-		if(werkVeld.PleurUnchecked(plek) < 0)
+		if(veld.PleurUnchecked(plek) < 0)
+		{
 			plekScore[i].score = Sm_MinMax;
-		else
-//			plekScore[i].score = BepaalScore(werkVeld, zoekDiepte, Sm_MinMax, Sm_PlusMax, NULL);
-			plekScore[i].score = -werkVeld.Waarde();
-//		if(plekScore[i].score != 0)
-//			printf("hier");
+			continue;
+		}
+		plekScore[i].score = -Minimax(veld,4);
+		veld.UnpleurUnchecked(plek);
 	}
 
 	std::sort(plekScore, plekScore + VierOpRijVeld::Sm_Breedte, PlekScoreSort);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 		volgorde[i] = plekScore[i].plek;
+}
 
+int CZetBedenker::Minimax(VierOpRijVeld& veld, int zoekDiepte)
+{
+	if(veld.Win() != 0)	return Sm_MinMax;
+	if(veld.Vol())      return 0;
+	if(zoekDiepte == 0) return Evalueer(veld);
+
+	int waarde = Sm_MinMax;
+	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
+	{
+		if(veld.PleurUnchecked(i) < 0)
+			continue;
+		int nieuweWaarde = -Minimax(veld, zoekDiepte - 1);
+		if(nieuweWaarde > waarde)
+			waarde = nieuweWaarde;
+		veld.UnpleurUnchecked(i);
+	}
+	return waarde;
 }
 
 int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, int beta, int* pZet)
@@ -442,7 +458,7 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		volgorde[j++] = plek;
 	}
 
-	//BepaalVolgorde(veld, volgorde, zoekDiepte);
+	BepaalVolgorde(veld, volgorde, zoekDiepte);
 
 	//VierOpRijVeld veldMetZet(veld);
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
