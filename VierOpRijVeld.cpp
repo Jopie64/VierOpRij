@@ -507,7 +507,7 @@ int CZetBedenker::BedenkZet(int zoekDiepte)
 {
 	m_bWinst = false;
 	if(zoekDiepte < 0)
-		zoekDiepte = max(14, m_Veld.m_Aantal);
+		zoekDiepte = max(18, m_Veld.m_Aantal + 9);
 	m_ZoekDiepte = zoekDiepte;
 
 	m_DiepteProgressLijst.resize(m_ZoekDiepte);
