@@ -35,7 +35,8 @@ void CVierOpRijViewWnd::OnPaint()
 {
 	static CFont S_font;
 	if(S_font.m_hObject == NULL)
-		S_font.CreatePointFont(80, L"MS Sans Serif");
+//		S_font.CreatePointFont(80, L"MS Sans Serif");
+		S_font.CreatePointFont(70, L"Courier New");
 	CPaintDC dc(this);
 	CFont* pOldFont = dc.SelectObject(&S_font);
 	CRect rectClient;
@@ -53,6 +54,12 @@ void CVierOpRijViewWnd::OnPaint()
 	dc.DrawText(m_Stats.c_str(), rectStats, DT_LEFT);
 
 	// **** Progress
+
+//	static CFont sCourier;
+//	if(sCourier.m_hObject == NULL)
+//		sCourier.CreatePointFont(60, L"Courier New", &dc);
+
+//	CFont * pOldFont2 = dc.SelectObject(&sCourier);
 	
 	CRect rectProgress = rectClient;
 	rectProgress.right = rectProgress.left + 80;
@@ -62,8 +69,7 @@ void CVierOpRijViewWnd::OnPaint()
 	rectProgress.DeflateRect(2,2);
 	dc.DrawText(m_Progress.c_str(), rectProgress, DT_TOP | DT_LEFT);
 
-
-
+//	dc.SelectObject(pOldFont2);
 
 	// **** Scores
 	CRect rectScores  = rectClient;

@@ -157,7 +157,7 @@ void CVierOpRijDlg::StatsBijwerken()
 			stats
 				<< std::setw(2) << tel++ << " " << i->volgorde << " " << i->plek;
 			if(i->beste >= 0)
-				stats << " b:" << i->beste;
+				stats << " b:" << i->beste << "|" << i->besteWaarde;
 			stats << std::endl;		
 		}
 		m_VierOpRijWnd.SetProgress(stats.str());

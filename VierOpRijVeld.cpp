@@ -462,7 +462,8 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 			if(zetScore > alpha)
 			{
 				alpha = zetScore;
-				diepteProgress.beste = plek;
+				diepteProgress.beste       = plek;
+				diepteProgress.besteWaarde = zetScore;
 			}
 		}
 //			alpha = __max(alpha, zetScore);
@@ -471,7 +472,8 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 			ScoreBepaald(plek, zetScore);
 			if(zetScore > alpha)
 			{
-				diepteProgress.beste = plek;
+				diepteProgress.beste       = plek;
+				diepteProgress.besteWaarde = zetScore;
 				alpha = zetScore;
 				*pZet = plek;
 			}

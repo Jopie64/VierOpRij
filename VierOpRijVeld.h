@@ -49,10 +49,11 @@ public:
 	class DiepteProgress
 	{
 	public:
-		DiepteProgress():volgorde(0), plek(0), beste(-1){}
+		DiepteProgress():volgorde(0), plek(0), beste(-1), besteWaarde(0){}
 		int volgorde;
 		int plek;
 		int beste;
+		int besteWaarde;
 	};
 	typedef std::vector<DiepteProgress> DiepteProgressLijst;
 
