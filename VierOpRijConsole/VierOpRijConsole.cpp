@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "..\VierOpRijVeld.h"
+#include <list>
 
 using namespace std;
 
@@ -33,7 +34,8 @@ void ToonVeld(const VierOpRijVeld& veld)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	VierOpRijVeld veld;
+	list<VierOpRijVeld> veldStapel;
+	veldStapel.push_back(VierOpRijVeld());
 
 	string invoer;
 	char invoerChar;
@@ -41,6 +43,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		try
 		{
+			VierOpRijVeld veld = veldStapel.back();
 			ToonVeld(veld);
 			SetKleur(WHITE);
 
@@ -67,15 +70,19 @@ int _tmain(int argc, _TCHAR* argv[])
 					{
 						cout << "Ik doe 'm op " << zet + 1 << "." << endl;
 						veld.Pleur(zet);
+						veldStapel.push_back(veld);
 					}
 				}
 				break;
 			case 'q': break;
+			case 'r': veldStapel.clear(); veldStapel.push_back(VierOpRijVeld()); break;
+			case 'u': if(veldStapel.size() <= 1)throw std::runtime_error("Wat moet er nu nog weg dan?"); veldStapel.pop_back(); break;
 			default:
 				if(invoerChar >= '0' && invoerChar <= '9')
 				{
 					invoerChar -= '1';
 					veld.Pleur(invoerChar);
+					veldStapel.push_back(veld);
 				}
 				else
 					throw std::runtime_error("Wat is dit? " + invoer);
@@ -84,7 +91,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		catch(std::exception& e)
 		{
 			SetKleur(RED);
-			cout << "Foutje: " << e.what() << endl;
+			cout << "*** " << e.what() << endl;
 		}
 	}while(invoerChar != 'q');
 
