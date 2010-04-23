@@ -145,7 +145,7 @@ void CVierOpRijDlg::StatsBijwerken()
 			<< "  Evals: " << m_BezigeBedenkerPtr->m_statEvals
 			<< "  Pleurs: " << m_BezigeBedenkerPtr->m_statPleurs
 			<< "  Wins: " << m_BezigeBedenkerPtr->m_statWins
-			<< "  Tijd: " << (CTime::GetCurrentTime() - m_BezigeBedenkerPtr->m_Timestamp_Begin).GetTotalSeconds();
+			<< "  Tijd: " << (int)(time(NULL) - m_BezigeBedenkerPtr->m_Timestamp_Begin);
 		m_VierOpRijWnd.SetStats(stats.str());
 	}
 
