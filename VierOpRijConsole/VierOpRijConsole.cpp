@@ -32,6 +32,37 @@ void ToonVeld(const VierOpRijVeld& veld)
 	}
 }
 
+void Pleur(list<VierOpRijVeld>& veldStapel, int plek, bool zetVanComputer)
+{
+	SetKleur(WHITE);
+	if(zetVanComputer)
+	{
+		if(plek < 0)
+		{
+			cout << "Ik heb geen idee... Doe maar iets." << endl;
+			return;
+		}
+		else
+			cout << "Ik doe 'm op " << plek + 1 << "." << endl;
+	}
+	VierOpRijVeld veld = veldStapel.back();
+	veld.Pleur(plek);
+	veldStapel.push_back(veld);
+	if(veld.Win())
+	{
+		if(zetVanComputer)
+		{
+			SetKleur(LIMEG);
+			cout << "Ik win (duh, alweer... gaap...)" << endl;
+		}
+		else
+		{
+			SetKleur(PURPLE);
+			cout << "Jij wint????? Vast vals gespeeld." << endl;
+		}
+	}
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	list<VierOpRijVeld> veldStapel;
@@ -64,14 +95,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					cout << "Denk denk... level " << level << "..." << endl;
 					CZetBedenker bedenker(veld);
 					int zet = bedenker.BedenkZet(level);
-					if(zet < 0)
-						cout << "Ik heb geen idee... Doe maar iets." << endl;
-					else
-					{
-						cout << "Ik doe 'm op " << zet + 1 << "." << endl;
-						veld.Pleur(zet);
-						veldStapel.push_back(veld);
-					}
+					Pleur(veldStapel, zet, true);
 				}
 				break;
 			case 'q': break;
@@ -81,11 +105,10 @@ int _tmain(int argc, _TCHAR* argv[])
 				if(invoerChar >= '0' && invoerChar <= '9')
 				{
 					invoerChar -= '1';
-					veld.Pleur(invoerChar);
-					veldStapel.push_back(veld);
+					Pleur(veldStapel, invoerChar, false);
 				}
 				else
-					throw std::runtime_error("Wat is dit? " + invoer);
+					throw std::runtime_error("Dit is gek: " + invoer + ". Ik niet snap.");
 			}
 		}
 		catch(std::exception& e)
