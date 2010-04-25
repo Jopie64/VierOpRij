@@ -139,13 +139,15 @@ void CVierOpRijDlg::StatsBijwerken()
 	if(m_BezigeBedenkerPtr == NULL)
 		return; //Niet deze bedenker meer...
 	{
+		clock_t tijd = clock() - m_BezigeBedenkerPtr->m_Timestamp_Begin;
+
 		std::wstringstream stats;
 		stats 
 			<< "Diepte: " << m_BezigeBedenkerPtr->m_ZoekDiepte
 			<< "  Evals: " << m_BezigeBedenkerPtr->m_statEvals
 			<< "  Pleurs: " << m_BezigeBedenkerPtr->m_statPleurs
 			<< "  Wins: " << m_BezigeBedenkerPtr->m_statWins
-			<< "  Tijd: " << (int)(time(NULL) - m_BezigeBedenkerPtr->m_Timestamp_Begin);
+			<< "  Tijd: " << (int)(tijd / 1000) << "." << std::setfill(L'0') << std::setw(3) << (int)(tijd % 1000);
 		m_VierOpRijWnd.SetStats(stats.str());
 	}
 

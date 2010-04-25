@@ -63,7 +63,7 @@ public:
 
 	CZetBedenker(const VierOpRijVeld& veld)
 	:	m_Veld(veld),m_Zet(-1),m_bAbort(false),m_bWinst(false),
-		m_statEvals(0),m_statPleurs(0), m_statWins(0), m_ZoekDiepte(0),m_Timestamp_Begin(time(NULL)){}
+		m_statEvals(0),m_statPleurs(0), m_statWins(0), m_ZoekDiepte(0),m_Timestamp_Begin(clock()){}
 	int BedenkZet(int zoekDiepte);
 
 	int  Zet()const{return m_Zet;}
@@ -86,7 +86,7 @@ private:
 
 
 public:
-	time_t				m_Timestamp_Begin;
+	clock_t				m_Timestamp_Begin;
 	DiepteProgressLijst m_DiepteProgressLijst;
 	int					m_statEvals;
 	int					m_statPleurs;

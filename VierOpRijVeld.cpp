@@ -511,6 +511,7 @@ int CZetBedenker::BedenkZet(int zoekDiepte)
 	m_ZoekDiepte = zoekDiepte;
 
 	m_DiepteProgressLijst.resize(m_ZoekDiepte);
+	m_Timestamp_Begin = clock();
 	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, &m_Zet);
 	return m_Zet;
 }
