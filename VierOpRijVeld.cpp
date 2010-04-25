@@ -3,6 +3,79 @@
 #include <algorithm>
 
 
+class CVierOpRijCache
+{
+public:
+	static const char G_HashBits = 20; //20 = +- 1 miljoen
+	static const int G_HashMasker = (1 << G_HashBits) - 1;
+	static const bool G_WerkMetCache = true;
+
+	class CCacheItem
+	{
+	public:
+		CCacheItem():m_Waarde(0), m_Bepaald(false), m_iDiepte(0), m_iPleurs(0){}
+
+		VierOpRijVeld m_Veld;
+		int			  m_Waarde;
+		bool		  m_Bepaald;
+		int			  m_iDiepte; //Gebruikte diepte om de waarde te bepalen
+		int			  m_iPleurs; //Aantal pleurs die nodig waren om tot deze conclusie te komen
+	};
+
+
+	CVierOpRijCache():m_CCacheItemLijst(1 << G_HashBits), m_Gevuld(0), m_PleursDieNietNodigWaren(0){}
+
+	bool GetCacheWaarde(const VierOpRijVeld& veld, int& waarde, int diepte)
+	{
+		if(!G_WerkMetCache)
+			return false;
+		CCacheItem& item = m_CCacheItemLijst[veld.Hash() & G_HashMasker];
+		if(!item.m_Bepaald)
+			return false;
+		if(!veld.IsZelfdeVeld(item.m_Veld))
+			return false;
+		if(item.m_iDiepte < diepte && !CZetBedenker::IsWinWaarde(item.m_Waarde))
+			return false; //Waarde bepaald bij verkeerde diepte. Helaas...
+
+		//Een cachehit!! Jay
+		m_PleursDieNietNodigWaren += item.m_iPleurs;
+		waarde = item.m_Waarde;
+		return true;
+	}
+
+	int SetCacheItem(const VierOpRijVeld& veld, int waarde, int diepte, int pleurs)
+	{
+		if(!G_WerkMetCache)
+			return 0;
+		CCacheItem& item = m_CCacheItemLijst[veld.Hash() & G_HashMasker];
+		bool isNietZelfdeVeld = item.m_Bepaald && !veld.IsZelfdeVeld(item.m_Veld);
+		if(isNietZelfdeVeld && item.m_iPleurs > pleurs)
+			return 1; //Niet zelfde veld, en al bestaande veld was moeilijker te bepalen. Dus zo laten.
+
+		if(!item.m_Bepaald)	++m_Gevuld;
+
+		item.m_Veld	   = veld;
+		item.m_Bepaald = true;
+		item.m_iPleurs = pleurs;
+		item.m_iDiepte = diepte;
+		item.m_Waarde  = waarde;
+
+		if(isNietZelfdeVeld)
+			return 2;
+		return 0;
+	}
+
+private:
+
+	typedef std::vector<CCacheItem> CCacheItemLijst;
+
+	CCacheItemLijst m_CCacheItemLijst;
+	int				m_Gevuld;
+	int				m_PleursDieNietNodigWaren;
+};
+
+CVierOpRijCache G_Cache;
+
 class CVierOpRijWeegschaal : public VierOpRijVeld
 {
 public:
@@ -17,7 +90,8 @@ CVierOpRijWeegschaal G_Weegschaal;
 VierOpRijVeld::VierOpRijVeld(void)
 :	m_Beurt(1),
 	m_Win(0),
-	m_Aantal(0)
+	m_Aantal(0),
+	m_Hash(0)
 {
 	memset(m_Veld,0,sizeof(m_Veld));
 	memset(m_Hoogte,0,sizeof(m_Hoogte));
@@ -83,18 +157,24 @@ int VierOpRijVeld::UnpleurUnchecked(int plek)
 	return hoogte;
 }
 
+#define HASH_ADD(_speler, _plek) ((_speler) * (1 << ((_plek) % 32)))
+
 void VierOpRijVeld::PlaatsUnchecked(int speler, int x, int y)
 {
-	if(speler == 0) 
+	char& plek = m_Veld[x][y];
+	if(speler == 0)
 	{
 		//Unplaats
-		m_SpelerWeegschaal[m_Veld[x][y] - 1] -= G_Weegschaal.m_Veld[x][y];
-		m_Veld[x][y] = 0;
+		m_SpelerWeegschaal[plek - 1] -= G_Weegschaal.m_Veld[x][y];
+		m_Hash -= HASH_ADD(plek, &plek - *m_Veld);
+		plek = 0;
 		--m_Aantal;
 		m_Win = 0;
 		return;
 	}
-	m_Veld[x][y] = speler;
+	m_Hash += HASH_ADD(speler, &plek - *m_Veld);
+	
+	plek = speler;
 	++m_Aantal;
 	m_SpelerWeegschaal[speler - 1] += G_Weegschaal.m_Veld[x][y];
 	m_Win = Win(x, y);
@@ -209,6 +289,15 @@ int VierOpRijVeld::Waarde(char speler)const
 			waarde -= m_SpelerWeegschaal[i];
 	return waarde;
 }
+
+bool VierOpRijVeld::IsZelfdeVeld(const VierOpRijVeld& veld) const
+{
+	if(m_Hash != veld.m_Hash) return false;
+	if(memcmp(&m_Veld, &veld.m_Veld, sizeof(m_Veld)) != 0) return false;
+	if(m_Beurt != veld.m_Beurt) return false;
+	return true;
+}
+
 
 
 void CVierOpRijWeegschaal::BepaalWeegschaal()
@@ -424,6 +513,13 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		veld.m_Aantal >= VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte) //Veld zit vol. Heeft ook niet veel zin meer hè...
 		return 0;
 
+//	if(false)
+	{
+		int cacheWaarde;
+		if(G_Cache.GetCacheWaarde(veld, cacheWaarde, zoekDiepte))
+			return cacheWaarde;//Flop, uit de cache getrokken! Is dat even handig!
+	}
+
 	//ff kijke of ik in deze situatie kan winne, zonder eerst dieper te zoeken.
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
@@ -444,6 +540,7 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		return Evalueer(veld);//Eventueel evalueren...
 
 	DiepteProgress& diepteProgress  = m_DiepteProgressLijst[zoekDiepte - 1];
+	int pleursBegin = m_statPleurs;
 	diepteProgress.beste = -1;
 	bool plekGebruikt[VierOpRijVeld::Sm_Breedte];
 	memset(plekGebruikt, 0, sizeof(plekGebruikt));
@@ -498,8 +595,13 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		}
 
 		if(beta <= alpha)
-			break; //Jay! Beta cutoff. Scheelt weer wat tijd.
+			return alpha;
+//			break; //Jay! Beta cutoff. Scheelt weer wat tijd.
 	}
+
+	G_Cache.SetCacheItem(veld, alpha, zoekDiepte, m_statPleurs - pleursBegin);
+
+	//G_VierOpRijVeldWaardeLijst[veld.m_Hash & G_HashMasker].m_Veld = veld;
 	return alpha;
 }
 

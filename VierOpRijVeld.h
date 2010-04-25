@@ -24,6 +24,9 @@ public:
 	inline bool Vol()const{return m_Aantal == Sm_Breedte * Sm_Hoogte;}
 	void		BeurtOverslaan(){VolgendeBeurt();}
 
+	bool		IsZelfdeVeld(const VierOpRijVeld& veld)const;
+	inline unsigned int  Hash()const{return m_Hash;}
+
 protected:
 	int PleurUnchecked(int plek);
 	int UnpleurUnchecked(int plek);
@@ -39,6 +42,7 @@ protected:
 	char m_Win;
 	int  m_Aantal;
 	int	 m_SpelerWeegschaal[Sm_Spelers];
+	unsigned int  m_Hash;
 
 	friend class CZetBedenker;
 
@@ -71,6 +75,8 @@ public:
 	void Abort(){m_bAbort = true;}
 
 	virtual void ScoreBepaald(int plek, int score){}
+
+	static bool IsWinWaarde(int waarde){return abs(waarde) >= Sm_PlusMax - VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte;}
 
 private:
 //	char SpeelWillekeurigSpel(VierOpRijVeld& veld, int diepte);
