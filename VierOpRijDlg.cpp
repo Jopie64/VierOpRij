@@ -144,9 +144,11 @@ void CVierOpRijDlg::StatsBijwerken()
 		std::wstringstream stats;
 		stats 
 			<< "Diepte: " << m_BezigeBedenkerPtr->m_ZoekDiepte
-			<< "  Evals: " << m_BezigeBedenkerPtr->m_statEvals
-			<< "  Pleurs: " << m_BezigeBedenkerPtr->m_statPleurs
-			<< "  Wins: " << m_BezigeBedenkerPtr->m_statWins
+			<< "  Ev: " << m_BezigeBedenkerPtr->m_statEvals
+			<< "  Pl: " << m_BezigeBedenkerPtr->m_statPleurs
+			<< "  W: " << m_BezigeBedenkerPtr->m_statWins
+			<< "  NP: " << m_BezigeBedenkerPtr->GetPleursDieNietHoeven()
+			<< "  V: " << m_BezigeBedenkerPtr->GetVulling() << "%"
 			<< "  Tijd: " << (int)(tijd / 1000) << "." << std::setfill(L'0') << std::setw(3) << (int)(tijd % 1000);
 		m_VierOpRijWnd.SetStats(stats.str());
 	}

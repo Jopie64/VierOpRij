@@ -65,6 +65,9 @@ public:
 		return 0;
 	}
 
+	inline int		GetPleursDieNietNodigWaren()const {return m_PleursDieNietNodigWaren;}
+	inline int		GetVulling()const {return (int)(m_Gevuld * 100.0 / (1 << G_HashBits));}
+
 private:
 
 	typedef std::vector<CCacheItem> CCacheItemLijst;
@@ -611,11 +614,20 @@ int CZetBedenker::BedenkZet(int zoekDiepte)
 	m_bWinst = false;
 	if(zoekDiepte < 0)
 		zoekDiepte = _cpp_max(18, m_Veld.m_Aantal + 9);
-	m_ZoekDiepte = zoekDiepte;
-
+	m_ZoekDiepte					= zoekDiepte;
+	m_statPleursDieNietHoevenBegin	= G_Cache.GetPleursDieNietNodigWaren();
 	m_DiepteProgressLijst.resize(m_ZoekDiepte);
-	m_Timestamp_Begin = clock();
+	m_Timestamp_Begin				= clock();
 	BepaalScore(m_Veld, zoekDiepte, Sm_MinMax, Sm_PlusMax, &m_Zet);
 	return m_Zet;
 }
 
+int CZetBedenker::GetPleursDieNietHoeven()const
+{
+	return G_Cache.GetPleursDieNietNodigWaren() - m_statPleursDieNietHoevenBegin;
+}
+
+int CZetBedenker::GetVulling()const
+{
+	return G_Cache.GetVulling();
+}

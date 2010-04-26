@@ -92,10 +92,14 @@ private:
 
 
 public:
+	int					GetPleursDieNietHoeven()const;
+	int					GetVulling()const;
+
 	clock_t				m_Timestamp_Begin;
 	DiepteProgressLijst m_DiepteProgressLijst;
 	int					m_statEvals;
 	int					m_statPleurs;
 	int					m_statWins;
+	int					m_statPleursDieNietHoevenBegin;
 	int					m_ZoekDiepte;
 };
