@@ -31,11 +31,11 @@ public:
 			return false;
 		CCacheItem& item = m_CCacheItemLijst[veld.Hash() & G_HashMasker];
 		if(!item.m_Bepaald)
-			return false;
-		if(!veld.IsZelfdeVeld(item.m_Veld))
-			return false;
+			return false; //Nog niet bepaald... Gaan we nu doen.
 		if(item.m_iDiepte < diepte && !CZetBedenker::IsWinWaarde(item.m_Waarde))
 			return false; //Waarde bepaald bij verkeerde diepte. Helaas...
+		if(!veld.IsZelfdeVeld(item.m_Veld))
+			return false; //Het is een ander veld met dezelfde hash. Helaas...
 
 		//Een cachehit!! Jay
 		m_PleursDieNietNodigWaren += item.m_iPleurs;
@@ -160,7 +160,11 @@ int VierOpRijVeld::UnpleurUnchecked(int plek)
 	return hoogte;
 }
 
-#define HASH_ADD(_speler, _plek) ((_speler) * (1 << ((_plek) % 32)))
+//#define HASH_ADD(_speler, _plek) (((unsigned __int64)(_speler) << (((_plek) * 1) % 64)))
+//#define HASH_ADD(_speler, _plek) ((_speler) == 1 ? ((((unsigned __int64)1) << (unsigned __int64)(((_plek) * 1) % 64))) : \
+//												   ((((unsigned __int64)1) << (unsigned __int64)(64 - (((_plek) * 1) % 64)))) )
+#define HASH_ADD(_speler, _plek) ((_speler) == 1 ? ((((unsigned __int64)1) << (unsigned __int64)(((_plek) * 1) % 32))) : \
+												   ((((unsigned __int64)1) << (unsigned __int64)(64 - (((_plek) * 1) % 32)))) )
 
 void VierOpRijVeld::PlaatsUnchecked(int speler, int x, int y)
 {
@@ -296,11 +300,25 @@ int VierOpRijVeld::Waarde(char speler)const
 bool VierOpRijVeld::IsZelfdeVeld(const VierOpRijVeld& veld) const
 {
 	if(m_Hash != veld.m_Hash) return false;
-	if(memcmp(&m_Veld, &veld.m_Veld, sizeof(m_Veld)) != 0) return false;
+	if(memcmp(&m_Veld, &veld.m_Veld, sizeof(m_Veld)) != 0) 
+		return false;
 	if(m_Beurt != veld.m_Beurt) return false;
 	return true;
 }
 
+unsigned int VierOpRijVeld::Hash()const
+{
+	__int64 werkHash = m_Hash;
+	unsigned int resultHash = 0;
+	for(int i = 0; i < 63 / CVierOpRijCache::G_HashBits; ++i) //Doet t 1x te weinig
+	{
+		resultHash += werkHash & CVierOpRijCache::G_HashMasker;
+		werkHash >>= CVierOpRijCache::G_HashBits;
+	}
+	resultHash += werkHash & CVierOpRijCache::G_HashMasker; // & operatie als het goed is hier niet nodig. Maar just for sure.
+
+	return resultHash;
+}
 
 
 void CVierOpRijWeegschaal::BepaalWeegschaal()
@@ -491,7 +509,13 @@ int CZetBedenker::Minimax(VierOpRijVeld& veld, int zoekDiepte)
 	if(veld.Vol())      return 0;
 	if(zoekDiepte == 0) return Evalueer(veld);
 
-	int waarde = Sm_MinMax;
+	//Stiekem even in de cache neuzen...
+	int waarde = 0;
+//	if(G_Cache.GetCacheWaarde(veld,waarde,zoekDiepte))
+//		return waarde; //Hee, iets gevonden!
+
+	//Ok, nix. Dan even zelf zoeken.
+	waarde = Sm_MinMax;
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
 		if(veld.PleurUnchecked(i) < 0)
@@ -517,7 +541,7 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		return 0;
 
 //	if(false)
-	if(pZet == NULL) //Doe dit alleen als alleen de waarde bepaald moet worden.
+	if(pZet == NULL && zoekDiepte > 1) //Doe dit alleen als alleen de waarde bepaald moet worden.
 	{
 		int cacheWaarde;
 		if(G_Cache.GetCacheWaarde(veld, cacheWaarde, zoekDiepte))

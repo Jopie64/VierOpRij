@@ -25,7 +25,7 @@ public:
 	void		BeurtOverslaan(){VolgendeBeurt();}
 
 	bool		IsZelfdeVeld(const VierOpRijVeld& veld)const;
-	inline unsigned int  Hash()const{return m_Hash;}
+	inline unsigned int  Hash()const;
 
 protected:
 	int PleurUnchecked(int plek);
@@ -42,7 +42,7 @@ protected:
 	char m_Win;
 	int  m_Aantal;
 	int	 m_SpelerWeegschaal[Sm_Spelers];
-	unsigned int  m_Hash;
+	unsigned __int64  m_Hash;
 
 	friend class CZetBedenker;
 
