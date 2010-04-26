@@ -48,9 +48,11 @@ public:
 		if(!G_WerkMetCache)
 			return 0;
 		CCacheItem& item = m_CCacheItemLijst[veld.Hash() & G_HashMasker];
-		bool isNietZelfdeVeld = item.m_Bepaald && !veld.IsZelfdeVeld(item.m_Veld);
-		if(isNietZelfdeVeld && item.m_iPleurs > pleurs)
-			return 1; //Niet zelfde veld, en al bestaande veld was moeilijker te bepalen. Dus zo laten.
+		if(item.m_iDiepte > diepte)
+			return 1; //Deze was moeilijker te bepalen. Lekker zo laten.
+//		bool isNietZelfdeVeld = item.m_Bepaald && !veld.IsZelfdeVeld(item.m_Veld);
+//		if(isNietZelfdeVeld && item.m_iPleurs > pleurs)
+//			return 1; //Niet zelfde veld, en al bestaande veld was moeilijker te bepalen. Dus zo laten.
 
 		if(!item.m_Bepaald)	++m_Gevuld;
 
@@ -60,8 +62,8 @@ public:
 		item.m_iDiepte = diepte;
 		item.m_Waarde  = waarde;
 
-		if(isNietZelfdeVeld)
-			return 2;
+//		if(isNietZelfdeVeld)
+//			return 2;
 		return 0;
 	}
 
@@ -480,7 +482,7 @@ bool PlekScoreSort(const PlekScore& left, const PlekScore& right)
 void CZetBedenker::BepaalVolgorde(VierOpRijVeld& veld, int (& volgorde)[VierOpRijVeld::Sm_Breedte], int zoekDiepte)
 {
 	//return;
-	zoekDiepte -= 8; //4 niveaus minder doorzoeken.
+	zoekDiepte -= 8; //8 niveaus minder doorzoeken.
 	if(zoekDiepte <= 0)
 		return; // Volgorde is niet boeiend.
 
@@ -494,7 +496,14 @@ void CZetBedenker::BepaalVolgorde(VierOpRijVeld& veld, int (& volgorde)[VierOpRi
 			plekScore[i].score = Sm_MinMax;
 			continue;
 		}
-		plekScore[i].score = -Minimax(veld,__min(zoekDiepte+1, 3));
+//		if(!G_Cache.GetCacheWaarde(veld,plekScore[i].score,3))
+			plekScore[i].score = -Minimax(veld,__min(zoekDiepte+1, 3));
+//		else
+//			plekScore[i].score = -plekScore[i].score;
+//		return waarde; //Hee, iets gevonden!
+
+	//Ok, nix. Dan maar even zelf zoeken.
+
 		veld.UnpleurUnchecked(plek);
 	}
 
@@ -507,14 +516,16 @@ int CZetBedenker::Minimax(VierOpRijVeld& veld, int zoekDiepte)
 {
 	if(veld.Win() != 0)	return Sm_MinMax;
 	if(veld.Vol())      return 0;
-	if(zoekDiepte == 0) return Evalueer(veld);
 
 	//Stiekem even in de cache neuzen...
 	int waarde = 0;
 //	if(G_Cache.GetCacheWaarde(veld,waarde,zoekDiepte))
 //		return waarde; //Hee, iets gevonden!
 
-	//Ok, nix. Dan even zelf zoeken.
+	//Ok, nix. Dan maar even zelf zoeken.
+	if(zoekDiepte == 0) return Evalueer(veld);
+
+
 	waarde = Sm_MinMax;
 	for(int i = 0; i < VierOpRijVeld::Sm_Breedte; ++i)
 	{
