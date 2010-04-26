@@ -514,6 +514,7 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		return 0;
 
 //	if(false)
+	if(pZet == NULL) //Doe dit alleen als alleen de waarde bepaald moet worden.
 	{
 		int cacheWaarde;
 		if(G_Cache.GetCacheWaarde(veld, cacheWaarde, zoekDiepte))
