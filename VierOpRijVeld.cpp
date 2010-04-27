@@ -9,6 +9,7 @@ public:
 	static const char G_HashBits = 20; //20 = +- 1 miljoen
 	static const int G_HashMasker = (1 << G_HashBits) - 1;
 	static const bool G_WerkMetCache = true;
+	static const int G_ZoekVerderInCache = 7;
 
 	class CCacheItem
 	{
@@ -29,13 +30,27 @@ public:
 	{
 		if(!G_WerkMetCache)
 			return false;
-		CCacheItem& item = m_CCacheItemLijst[veld.Hash() & G_HashMasker];
-		if(!item.m_Bepaald)
-			return false; //Nog niet bepaald... Gaan we nu doen.
+
+		int veldPlek = veld.Hash();
+		CCacheItemLijst::iterator it;
+		int i;
+		for(i = 0; i < G_ZoekVerderInCache; ++i)
+		{
+			it = m_CCacheItemLijst.begin() + ((veldPlek + i) & G_HashMasker);
+			if(!it->m_Bepaald)
+				return false; //Nog niet bepaald... Gaan we nu doen.
+			if(veld.IsZelfdeVeld(it->m_Veld))
+				break; //Gevonden.
+		}
+		if(i == G_ZoekVerderInCache)
+			return false; //Niet gevonden...
+		CCacheItem& item = *it;
+//		if(!item.m_Bepaald)
+//			return false; //Nog niet bepaald... Gaan we nu doen.
 		if(item.m_iDiepte < diepte && !CZetBedenker::IsWinWaarde(item.m_Waarde))
 			return false; //Waarde bepaald bij verkeerde diepte. Helaas...
-		if(!veld.IsZelfdeVeld(item.m_Veld))
-			return false; //Het is een ander veld met dezelfde hash. Helaas...
+//		if(!veld.IsZelfdeVeld(item.m_Veld))
+//			return false; //Het is een ander veld met dezelfde hash. Helaas...
 
 		//Een cachehit!! Jay
 		m_PleursDieNietNodigWaren += item.m_iPleurs;
@@ -47,9 +62,27 @@ public:
 	{
 		if(!G_WerkMetCache)
 			return 0;
-		CCacheItem& item = m_CCacheItemLijst[veld.Hash() & G_HashMasker];
-		if(item.m_iDiepte > diepte)
-			return 1; //Deze was moeilijker te bepalen. Lekker zo laten.
+		int veldPlek = veld.Hash();
+		CCacheItemLijst::iterator itBeste = m_CCacheItemLijst.end();
+		for(int i = 0; i < G_ZoekVerderInCache; ++i)
+		{
+			CCacheItemLijst::iterator it = m_CCacheItemLijst.begin() + ((veldPlek + i) & G_HashMasker);
+			if(it->m_iDiepte > diepte)
+				continue;//Deze was moeilijker te bepalen. Lekker zo laten.
+			if(!it->m_Bepaald)
+			{
+				itBeste = it;
+				break; //Nog niet bepaald. Gelijk kiezen
+			}
+			if(itBeste == m_CCacheItemLijst.end() || it->m_iDiepte < itBeste->m_iDiepte)
+				itBeste = it;
+		}
+		if(itBeste == m_CCacheItemLijst.end())
+			return 1;
+
+		CCacheItem& item = *itBeste;
+//		if(item.m_iDiepte > diepte)
+//			return 1; //Deze was moeilijker te bepalen. Lekker zo laten.
 //		bool isNietZelfdeVeld = item.m_Bepaald && !veld.IsZelfdeVeld(item.m_Veld);
 //		if(isNietZelfdeVeld && item.m_iPleurs > pleurs)
 //			return 1; //Niet zelfde veld, en al bestaande veld was moeilijker te bepalen. Dus zo laten.
