@@ -10,6 +10,7 @@ public:
 	static const int G_HashMasker = (1 << G_HashBits) - 1;
 	static const bool G_WerkMetCache = true;
 	static const int G_ZoekVerderInCache = 7;
+	static const int G_GaNietInCacheZoekenOnderDiepte = 2;
 
 	class CCacheItem
 	{
@@ -28,7 +29,7 @@ public:
 
 	bool GetCacheWaarde(const VierOpRijVeld& veld, int& waarde, int diepte)
 	{
-		if(!G_WerkMetCache)
+		if(!G_WerkMetCache || diepte < G_GaNietInCacheZoekenOnderDiepte)
 			return false;
 
 		int veldPlek = veld.Hash();
@@ -60,7 +61,7 @@ public:
 
 	int SetCacheItem(const VierOpRijVeld& veld, int waarde, int diepte, int pleurs)
 	{
-		if(!G_WerkMetCache)
+		if(!G_WerkMetCache || diepte < G_GaNietInCacheZoekenOnderDiepte)
 			return 0;
 		int veldPlek = veld.Hash();
 		CCacheItemLijst::iterator itBeste = m_CCacheItemLijst.end();
@@ -602,7 +603,7 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		return 0;
 
 //	if(false)
-	if(pZet == NULL && zoekDiepte > 1) //Doe dit alleen als alleen de waarde bepaald moet worden.
+	if(pZet == NULL) //Doe dit alleen als alleen de waarde bepaald moet worden.
 	{
 		int cacheWaarde;
 		if(G_Cache.GetCacheWaarde(veld, cacheWaarde, zoekDiepte))
@@ -698,7 +699,7 @@ int CZetBedenker::BedenkZet(int zoekDiepte)
 {
 	m_bWinst = false;
 	if(zoekDiepte < 0)
-		zoekDiepte = _cpp_max(18, m_Veld.m_Aantal + 9);
+		zoekDiepte = _cpp_max(20, m_Veld.m_Aantal + 13);
 	zoekDiepte = _cpp_min(zoekDiepte, m_Veld.AantalZettenOver());
 	m_ZoekDiepte					= zoekDiepte;
 	G_Cache.CacheVoorbereiden(m_Veld.GetAantal() + zoekDiepte);
