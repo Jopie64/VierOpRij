@@ -21,11 +21,14 @@ public:
 
 	inline char Beurt()const{return m_Beurt;}
 
-	inline bool Vol()const{return m_Aantal == Sm_Breedte * Sm_Hoogte;}
 	void		BeurtOverslaan(){VolgendeBeurt();}
 
 	bool		IsZelfdeVeld(const VierOpRijVeld& veld)const;
 	inline unsigned int  Hash()const;
+
+	inline int	AantalZettenOver()const{return Sm_Breedte * Sm_Hoogte - m_Aantal;}
+	inline bool	Vol()const{return AantalZettenOver() == 0;}
+	inline int	GetAantal()const{return m_Aantal;}
 
 protected:
 	int PleurUnchecked(int plek);

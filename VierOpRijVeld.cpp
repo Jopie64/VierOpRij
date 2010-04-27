@@ -100,6 +100,23 @@ public:
 		return 0;
 	}
 
+	void			CacheVoorbereiden(int diepte)
+	{
+		CCacheItemLijst::iterator itEnd = m_CCacheItemLijst.end();
+		for(CCacheItemLijst::iterator it = m_CCacheItemLijst.begin(); it != itEnd; ++it)
+		{
+			if(!it->m_Bepaald)
+				continue;
+			if(CZetBedenker::IsWinWaarde(it->m_Waarde))
+				continue;
+			if(it->m_iDiepte + it->m_Veld.GetAantal() == diepte)
+				continue;
+			
+			*it = CCacheItem();//Leegmaken
+			--m_Gevuld;
+		}
+	}
+
 	inline int		GetPleursDieNietNodigWaren()const {return m_PleursDieNietNodigWaren;}
 	inline int		GetVulling()const {return (int)(m_Gevuld * 100.0 / (1 << G_HashBits));}
 
@@ -581,7 +598,7 @@ int CZetBedenker::BepaalScore(VierOpRijVeld& veld, int zoekDiepte, int alpha, in
 		return Sm_MinMax;
 	}
 	if(	m_bAbort ||			//Stoppen maar. Gebruiker heeft geen geduld.
-		veld.m_Aantal >= VierOpRijVeld::Sm_Breedte * VierOpRijVeld::Sm_Hoogte) //Veld zit vol. Heeft ook niet veel zin meer hè...
+		veld.Vol()) //Veld zit vol. Heeft ook niet veel zin meer hè...
 		return 0;
 
 //	if(false)
@@ -682,7 +699,9 @@ int CZetBedenker::BedenkZet(int zoekDiepte)
 	m_bWinst = false;
 	if(zoekDiepte < 0)
 		zoekDiepte = _cpp_max(18, m_Veld.m_Aantal + 9);
+	zoekDiepte = _cpp_min(zoekDiepte, m_Veld.AantalZettenOver());
 	m_ZoekDiepte					= zoekDiepte;
+	G_Cache.CacheVoorbereiden(m_Veld.GetAantal() + zoekDiepte);
 	m_statPleursDieNietHoevenBegin	= G_Cache.GetPleursDieNietNodigWaren();
 	m_DiepteProgressLijst.resize(m_ZoekDiepte);
 	m_Timestamp_Begin				= clock();
