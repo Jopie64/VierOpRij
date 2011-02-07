@@ -7,6 +7,7 @@
 #include "VierOpRijDlg.h"
 #include <sstream>
 #include <iomanip>
+#include <functional>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -113,7 +114,7 @@ void CVierOpRijDlg::AsyncBedenk(CMijnZetBedenker* pBedenker)
 	{
 		AfxMessageBox(L"Oeps, maak even een denkfout... " + CString(C_e.what()));
 	}
-	CMainTd::I()->PostCallback(simplebind(&CVierOpRijDlg::BedenkResultaat, this, pBedenker));
+	CMainTd::I().PostCallback(std::tr1::bind(&CVierOpRijDlg::BedenkResultaat, this, pBedenker));
 }
 
 void CVierOpRijDlg::CMijnZetBedenker::ScoreBepaald(int plek, int score)
@@ -122,7 +123,7 @@ void CVierOpRijDlg::CMijnZetBedenker::ScoreBepaald(int plek, int score)
 	params.pBedenker	= this;
 	params.plek			= plek;
 	params.score		= score;
-	CMainTd::I()->PostCallback(simplebind(&CVierOpRijDlg::ScoreBepaald, m_Dlg, params));
+	CMainTd::I().PostCallback(std::tr1::bind(&CVierOpRijDlg::ScoreBepaald, m_Dlg, params));
 }
 
 
@@ -197,7 +198,7 @@ void CVierOpRijDlg::StopBedenker()
 
 void CVierOpRijDlg::StartBedenker()
 {
-	Threading::ExecAsync(simplebind(&CVierOpRijDlg::AsyncBedenk, this, 
+	JStd::Threading::ExecAsync(std::tr1::bind(&CVierOpRijDlg::AsyncBedenk, this, 
 				m_BezigeBedenkerPtr = new CMijnZetBedenker(m_VierOpRijWnd.Veld(), this)));
 	m_VierOpRijWnd.ResetScores();
 }

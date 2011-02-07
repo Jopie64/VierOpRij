@@ -59,7 +59,7 @@ BOOL CVierOpRijApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-	CMainTd::I()->Attach();
+	CMainTd::I().Attach();
 
 	CVierOpRijDlg dlg;
 	m_pMainWnd = &dlg;
@@ -75,7 +75,7 @@ BOOL CVierOpRijApp::InitInstance()
 		//  dismissed with Cancel
 	}
 
-	CMainTd::I()->Detach();
+	CMainTd::I().Detach();
 
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.

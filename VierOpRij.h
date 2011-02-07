@@ -31,7 +31,7 @@ public:
 
 extern CVierOpRijApp theApp;
 
-class CMainTd : public Threading::CWinMlHook, public Threading::CSingleton<CMainTd>
+class CMainTd : public JStd::Threading::CWinMlHook, public JStd::CSingleton<CMainTd>
 {
 public:
 };
