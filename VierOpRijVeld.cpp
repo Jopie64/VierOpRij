@@ -2,6 +2,7 @@
 #include "VierOpRijVeld.h"
 #include <algorithm>
 
+using namespace std;
 
 class CVierOpRijCache
 {
@@ -699,8 +700,8 @@ int CZetBedenker::BedenkZet(int zoekDiepte)
 {
 	m_bWinst = false;
 	if(zoekDiepte < 0)
-		zoekDiepte = _cpp_max(20, m_Veld.m_Aantal + 13);
-	zoekDiepte = _cpp_min(zoekDiepte, m_Veld.AantalZettenOver());
+		zoekDiepte = max(20, m_Veld.m_Aantal + 13);
+	zoekDiepte = min(zoekDiepte, m_Veld.AantalZettenOver());
 	m_ZoekDiepte					= zoekDiepte;
 	G_Cache.CacheVoorbereiden(m_Veld.GetAantal() + zoekDiepte);
 	m_statPleursDieNietHoevenBegin	= G_Cache.GetPleursDieNietNodigWaren();
