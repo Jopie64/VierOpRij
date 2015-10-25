@@ -20,10 +20,11 @@
 
 #ifdef CONSOLE
 #include <cstdio>
-#include <tchar.h>
 #include <string>
 #include <iostream>
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #else
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions

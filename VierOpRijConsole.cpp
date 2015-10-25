@@ -11,7 +11,11 @@ enum Color { DBLUE=1,GREEN,GREY,DRED,DPURP,BROWN,LGREY,DGREY,BLUE,LIMEG,TEAL,RED
 
 void SetKleur(Color P_Kleur)
 {
+#ifdef _WIN32
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), P_Kleur);
+#else
+    cout << "\033[22;" << 30 + P_Kleur << "m";
+#endif
 }
 
 void ToonVeld(const VierOpRijVeld& veld)

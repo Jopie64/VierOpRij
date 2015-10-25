@@ -45,7 +45,7 @@ protected:
 	char m_Win;
 	int  m_Aantal;
 	int	 m_SpelerWeegschaal[Sm_Spelers];
-	unsigned __int64  m_Hash;
+    unsigned long long m_Hash;
 
 	friend class CZetBedenker;
 

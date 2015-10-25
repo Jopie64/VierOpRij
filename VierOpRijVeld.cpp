@@ -1,6 +1,7 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "VierOpRijVeld.h"
 #include <algorithm>
+#include <cstring>
 
 using namespace std;
 
@@ -214,11 +215,11 @@ int VierOpRijVeld::UnpleurUnchecked(int plek)
 	return hoogte;
 }
 
-//#define HASH_ADD(_speler, _plek) (((unsigned __int64)(_speler) << (((_plek) * 1) % 64)))
-//#define HASH_ADD(_speler, _plek) ((_speler) == 1 ? ((((unsigned __int64)1) << (unsigned __int64)(((_plek) * 1) % 64))) : \
-//												   ((((unsigned __int64)1) << (unsigned __int64)(64 - (((_plek) * 1) % 64)))) )
-#define HASH_ADD(_speler, _plek) ((_speler) == 1 ? ((((unsigned __int64)1) << (unsigned __int64)(((_plek) * 1) % 32))) : \
-												   ((((unsigned __int64)1) << (unsigned __int64)(64 - (((_plek) * 1) % 32)))) )
+//#define HASH_ADD(_speler, _plek) (((unsigned long long)(_speler) << (((_plek) * 1) % 64)))
+//#define HASH_ADD(_speler, _plek) ((_speler) == 1 ? ((((unsigned long long)1) << (unsigned long long)(((_plek) * 1) % 64))) : \
+//												   ((((unsigned long long)1) << (unsigned long long)(64 - (((_plek) * 1) % 64)))) )
+#define HASH_ADD(_speler, _plek) ((_speler) == 1 ? ((((unsigned long long)1) << (unsigned long long)(((_plek) * 1) % 32))) : \
+												   ((((unsigned long long)1) << (unsigned long long)(64 - (((_plek) * 1) % 32)))) )
 
 void VierOpRijVeld::PlaatsUnchecked(int speler, int x, int y)
 {
@@ -362,7 +363,7 @@ bool VierOpRijVeld::IsZelfdeVeld(const VierOpRijVeld& veld) const
 
 unsigned int VierOpRijVeld::Hash()const
 {
-	__int64 werkHash = m_Hash;
+	long long werkHash = m_Hash;
 	unsigned int resultHash = 0;
 	for(int i = 0; i < 63 / CVierOpRijCache::G_HashBits; ++i) //Doet t 1x te weinig
 	{
@@ -549,7 +550,7 @@ void CZetBedenker::BepaalVolgorde(VierOpRijVeld& veld, int (& volgorde)[VierOpRi
 			continue;
 		}
 //		if(!G_Cache.GetCacheWaarde(veld,plekScore[i].score,3))
-			plekScore[i].score = -Minimax(veld,__min(zoekDiepte+1, 3));
+			plekScore[i].score = -Minimax(veld,min(zoekDiepte+1, 3));
 //		else
 //			plekScore[i].score = -plekScore[i].score;
 //		return waarde; //Hee, iets gevonden!
